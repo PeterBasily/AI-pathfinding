@@ -36,7 +36,13 @@ function draw()
       if(next){
         next.visited = true;
         visitedCells.push(current);
-        current.blocked = false;
+        let rand = Math.random();
+        if(rand <= 0.3){
+          current.blocked = true;
+        }
+        else{
+          current.blocked = false;
+        }
         current = next;
         
       }
