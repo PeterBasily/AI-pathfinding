@@ -1,23 +1,26 @@
 function Cell(i, j){
   this.i = i;
   this.j = j;
-  this.blocked = false;
+  this.blocked = true;
   this.visited = false;
   
   this.show = function(){
     x = this.i * 10;
     y = this.j * 10;
     stroke(255);
-    noFill(); 
     if(this.blocked){
-      fill(0);
+      
+      noFill();
+      rect(x, y, 10, 10);
     }
-    if(!this.blocked && this.visited){
+    else {
+      noStroke();
       fill(255,155,155,100);
+      rect(x, y, 10, 10);
     }
 
    
-    rect(x, y, 10, 10);
+    
    
     
   }
@@ -37,8 +40,6 @@ function Cell(i, j){
     temp.push(grid[index(i+1,j)]);
     temp.push(grid[index(i, j+1)]);
     temp.push(grid[index(i-1,j)]);
-    console.log(temp)
-
 
     for(let i = 0; i < temp.length; i++){
       if(temp[i] && !temp[i].visited){
