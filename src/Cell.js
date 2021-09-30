@@ -5,6 +5,7 @@ function Cell(i, j){
   this.visited = false;
   
   this.show = function(){
+
     x = this.i * 10;
     y = this.j * 10;
     stroke(255);
@@ -24,6 +25,14 @@ function Cell(i, j){
    
     
   }
+  this.highLight = function(){
+    x = this.i * 10;
+    y = this.j * 10;
+    noStroke();
+    fill(0, 0, 255);
+    rect(x, y, 10, 10)
+  }
+
   function index(i, j){
     if(i < 0 || j < 0 || i > 100 || j > 100){
       return -1;
@@ -35,7 +44,7 @@ function Cell(i, j){
     var temp = [];
     var neighbors = [];
 
-
+    
     temp.push(grid[index(i, j-1)]);
     temp.push(grid[index(i+1,j)]);
     temp.push(grid[index(i, j+1)]);
@@ -46,7 +55,6 @@ function Cell(i, j){
         neighbors.push(temp[i]);
       }
     }
-    console.log(neighbors)
     var r = floor(random(0, neighbors.length));
     return neighbors[r];
 
