@@ -5,6 +5,11 @@ var visitedCells = [];
 var current;
 var canvas;
 var reset;
+var startSearch = false;
+var r;
+var r2;
+var start;
+var finish;
 
 function init(){
   reset = true;
@@ -20,7 +25,8 @@ function init(){
   for(i = 0; i < 50; i++){
     visitedCells = [];
     grid = allGrids[i];
-    current = grid[0];
+    var r = floor(random(0, grid.length))
+    current = grid[r];
     current.visited = true;
     visitedCells.push(current);
     while(visitedCells.length > 0){
@@ -40,6 +46,7 @@ function init(){
 
     }
   }
+  visitedCells = [];
 }
 
 function run(){
@@ -54,16 +61,34 @@ function run(){
 }
 
 
+function setStartAndFinish(){
+  r = floor(random(0, grid.length))
+  r2 = floor(random(0, grid.length))
+  start = grid[r];
+  finish = grid[r2];
+  while(start.blocked || finish.blocked){
+      r = floor(random(0, grid.length))
+      r2 = floor(random(0, grid.length))
+      start = grid[r]
+      finish = grid[r2]
+      start.highLight();
+      finish.highLight();
+    }
+  }
+    
+    
 
 
 function setup()
 {
-  frameRate(30)
+  frameRate(60)
   canvas = createCanvas(1010, 1010);
   canvas.position((windowWidth-1010)/2, 100);
   init();
   var button = createButton("reset");
   button.mousePressed(init);
+  var button2 = createButton("Find 2 open nodes");
+  button2.mousePressed(setStartAndFinish);
   var dropdown = document.getElementById("MazeSelect");
   for(var i = 0; i < 50; i++){
     var newOption = document.createElement('option');
@@ -76,6 +101,8 @@ function setup()
     
 function setGrid(value){
   grid = allGrids[value];
+  start = undefined;
+  finish = undefined;
 }
 
 
@@ -83,6 +110,10 @@ function draw()
 {
 
   run();
+  if(start)
+    start.highLight();
+  if(finish)
+    finish.highLight();
   
 
   
