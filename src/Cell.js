@@ -16,7 +16,7 @@ function Cell(i, j){
     }
     else {
       noStroke();
-      fill(255,155,155,100);
+      fill(0,0,0);
       rect(x, y, 10, 10);
     }
 
@@ -25,11 +25,11 @@ function Cell(i, j){
    
     
   }
-  this.highLight = function(){
+  this.highLight = function(fillColor){
     x = this.i * 10;
     y = this.j * 10;
     noStroke();
-    fill(0, 0, 255);
+    fill(fillColor);
     rect(x, y, 10, 10)
   }
 

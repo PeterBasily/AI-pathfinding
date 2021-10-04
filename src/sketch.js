@@ -77,9 +77,10 @@ function setStartAndFinish(){
       r2 = floor(random(0, grid.length))
       start = grid[r]
       finish = grid[r2]
-      start.highLight();
-      finish.highLight();
+      
     }
+    console.log(start)
+    console.log(finish)
   }
     
     
@@ -117,9 +118,9 @@ function draw()
 
   run();
   if(start)
-    start.highLight();
+    start.highLight('red');
   if(finish)
-    finish.highLight();
+    finish.highLight('green');
   
 
   
