@@ -35,7 +35,13 @@ function init(){
       if(next){
         next.visited = true;
         visitedCells.push(current);
-        current.blocked = false;
+         let rand = Math.random();
+        if(rand <= 0.2){
+          current.blocked = true;
+        }
+        else{
+          current.blocked = false;
+        }
         current = next;
         
       }
