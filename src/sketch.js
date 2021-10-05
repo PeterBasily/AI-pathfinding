@@ -117,10 +117,13 @@ function draw()
 {
 
   run();
-  if(start)
+  if(start){
     start.highLight('red');
-  if(finish)
-    finish.highLight('green');
+  }
+  if(finish){
+    finish.highLight('orange');
+  }
+    
   
 
   
