@@ -1,64 +1,136 @@
 
-var grid = [];
+var allGrids = [];
+var grid;
 var visitedCells = [];
 var current;
 var canvas;
-function setup()
-{
-  frameRate(5);
-  canvas = createCanvas(1010, 1010);
-  canvas.position((windowWidth-1010)/2, 100);
-  for(let j = 0; j < 101; j++){
-    for(let i = 0; i < 101; i++){
-      let cell = new Cell(i, j); 
-      grid.push(cell);
-      
+var reset;
+var startSearch = false;
+var r;
+var r2;
+var start;
+var finish;
+
+function init() {
+  reset = true;
+  for (let k = 0; k < 50; k++) {
+    allGrids[k] = [];
+    for (let j = 0; j < 101; j++) {
+      for (let i = 0; i < 101; i++) {
+        let cell = new Cell(i, j);
+        allGrids[k].push(cell);
+      }
     }
   }
-  
-  current = grid[0];
-};
-    
-
-
-
-function draw()
-{
-  
-    background(100);
+  for (i = 0; i < 50; i++) {
+    visitedCells = [];
+    grid = allGrids[i];
+    var r = floor(random(0, grid.length))
+    current = grid[r];
     current.visited = true;
-    for(i = 0; i < grid.length; i++){
-        
-      grid[i].show();
+    visitedCells.push(current);
+    while (visitedCells.length > 0) {
+      current.visited = true;
       var next = current.checkNeighbors(grid);
-      
-
-      if(next){
+      if (next) {
         next.visited = true;
         visitedCells.push(current);
+
         let rand = Math.random();
-        if(rand <= 0.3){
+        if (rand <= 0.2) {
           current.blocked = true;
         }
-        else{
+        else {
           current.blocked = false;
         }
         current = next;
-        
+
       }
-      else if(visitedCells.length > 0){
+      else {
         current = visitedCells.pop();
-        
+
       }
 
-      
     }
-  
-      
-      
-    
+  }
+  visitedCells = [];
 }
 
-  
+function run() {
+  canvas.position((windowWidth - 1010) / 2, 100);
+
+
+  background(100);
+  for (i = 0; i < grid.length; i++) {
+    grid[i].show();
+  }
+
+}
+
+
+function setStartAndFinish() {
+  r = floor(random(0, grid.length))
+  r2 = floor(random(0, grid.length))
+  start = grid[r];
+  finish = grid[r2];
+  while (start.blocked || finish.blocked) {
+    r = floor(random(0, grid.length))
+    r2 = floor(random(0, grid.length))
+    start = grid[r]
+    finish = grid[r2]
+
+  }
+  console.log(start)
+  console.log(finish)
+}
+
+
+
+
+function setup() {
+  frameRate(60)
+  canvas = createCanvas(1010, 1010);
+  canvas.position((windowWidth - 1010) / 2, 100);
+  init();
+  var button = createButton("reset");
+  button.mousePressed(init);
+  var button2 = createButton("Find 2 open nodes");
+  button2.mousePressed(setStartAndFinish);
+  var dropdown = document.getElementById("MazeSelect");
+  for (var i = 0; i < 50; i++) {
+    var newOption = document.createElement('option');
+    newOption.text = i;
+    newOption.value = i;
+    dropdown.options.add(newOption);
+  }
+
+};
+
+function setGrid(value) {
+  grid = allGrids[value];
+  start = undefined;
+  finish = undefined;
+}
+
+
+function draw() {
+
+  run();
+  if (start) {
+    start.highLight('red');
+  }
+  if (finish) {
+    finish.highLight('orange');
+  }
+
+
+
+
+
+
+
+}
+
+
 
 
