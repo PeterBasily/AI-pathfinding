@@ -3,6 +3,13 @@ function Cell(i, j){
   this.j = j;
   this.blocked = true;
   this.visited = false;
+
+  this.h;
+  this.f;
+  this.tree;
+  this.search;
+  this.g = Infinity;
+
   
   this.show = function(){
 

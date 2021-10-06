@@ -10,6 +10,7 @@ var r;
 var r2;
 var start;
 var finish;
+var forward;
 
 function init() {
   reset = true;
@@ -89,13 +90,13 @@ function setStartAndFinish() {
 
 function setup() {
   frameRate(60)
-  canvas = createCanvas(1010, 1010);
-  canvas.position((windowWidth - 1010) / 2, 100);
+  canvas = createCanvas(1010, 1010, P2D);
+  canvas.parent('canvas_parent');
+  canvas.elt.style.position = 'fixed';
+  canvas.style('top', 100);
+  canvas.style('left', (windowWidth - 1010) / 2);
+  //canvas.position((windowWidth - 1010) / 2 );
   init();
-  var button = createButton("reset");
-  button.mousePressed(init);
-  var button2 = createButton("Find 2 open nodes");
-  button2.mousePressed(setStartAndFinish);
   var dropdown = document.getElementById("MazeSelect");
   for (var i = 0; i < 50; i++) {
     var newOption = document.createElement('option');
@@ -110,6 +111,26 @@ function setGrid(value) {
   grid = allGrids[value];
   start = undefined;
   finish = undefined;
+}
+
+//Need to add tie breaking buttons and logic
+function runSearch(){
+  if(start == undefined || finish == undefined){
+    alert("Start/Goal not selected. Find two open nodes and try again!");
+  }
+  var searchType;
+  var radioGroup = document.getElementsByName("searchType");
+  for(const rButton of radioGroup){
+    if(rButton.checked){
+      searchType = rButton.value;
+    }
+  }
+  //Remove eventually
+  if(searchType == undefined){
+    alert("You done messed up!");
+  }
+  
+
 }
 
 

@@ -1,18 +1,39 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="index.css">
 </head>
+
 <body>
     <h1>hi</h1>
-    <div><script src="libraries/p5.js"></script>
-    <script src="libraries/p5.dom.js"></script>
-    <script src="src/sketch.js"></script>
-    <script src="src/Cell.js"></script>
+    <div>
+        <script src="libraries/p5.js"></script>
+        <script src="libraries/p5.dom.js"></script>
+        <script src="src/sketch.js"></script>
+        <script src="src/Cell.js"></script>
     </div>
-    <div><select id="MazeSelect" onchange ="setGrid(this.value)"></div>
+    <div id="parent">
+        <div id=maze_selection>
+            <label for="MazeSelect"><select id="MazeSelect" onchange="setGrid(this.value)"></select></label>
+            <label for="reset"><button id="reset" onclick="init()">Reset</button></label>
+            <label for="setStart"><button id="setStart" onclick="setStartAndFinish()">Find 2 open nodes</button></label>
+        </div>
+        <div id=search_selection class="radioLeft" style="position:absolute; left:200px;">
+            <label for="forward"><input type="radio" id="forward" name="searchType" value="forward" checked>Repeated
+                Forwards A*</label>
+            <label for="backward"><input type="radio" id="backward" name="searchType" value="backward">Repeated
+                Backwards A*</label>
+            <label for="forward"><input type="radio" id="adaptive" name="searchType" value="adaptive">Adaptive
+                A*</label>
+            <label for="runSearch"><button id="runSearch" onclick="runSearch()">Run selected
+                    algorithm</button></label><label for=""></label>
+        </div>
+        <div id="canvas_parent"></div>
+    </div>
 </body>
+
 </html>
