@@ -11,6 +11,7 @@ var r2;
 var start;
 var finish;
 var forward;
+var heap = new MinHeap(Math.floor);
 
 function init() {
   reset = true;
@@ -55,6 +56,10 @@ function init() {
     }
   }
   visitedCells = [];
+  for(let i = 0; i < grid.length; i++){
+    grid[i].visited = false;
+  }
+  
 }
 
 function run() {
@@ -109,6 +114,9 @@ function setup() {
 
 function setGrid(value) {
   grid = allGrids[value];
+  for(let i = 0; i < grid.length; i++){
+    grid[i].visited = false;
+  }
   start = undefined;
   finish = undefined;
 }
@@ -151,7 +159,5 @@ function draw() {
 
 
 }
-
-
 
 

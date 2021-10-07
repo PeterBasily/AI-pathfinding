@@ -25,7 +25,7 @@ class MinHeap{
         else {
             parent = (index-2)/2;
         }
-        if(this.heuristic(this.items[index]) < this.heuristic(this.items[parent])){
+        if(this.heuristic(this.items[index].f) < this.heuristic(this.items[parent].f)){
             let temp = this.items[parent];
             this.items[parent] = this.items[index];
             this.items[index] = temp;
@@ -52,17 +52,29 @@ class MinHeap{
         }
 
     }
+    extractMin = () => {
+        if(this.size > 0){
+            var min = this.items[0];
+            this.items[0] = this.items[this.size-1];
+            this.items.pop();
+            this.size--;
+            this.bubbleDown(0);
+            return min;
+          }
+          else
+            return undefined;
+    }
 
     bubbleDown = (index) =>{
         let left = 2 * (index + 1) - 1;
         let right = 2 * (index + 1);
         let largest = index;
 
-        if (left <= this.items.length && this.heuristic(this.items[left]) < this.heuristic(this.items[largest])){
+        if (left <= this.items.length && this.heuristic(this.items[left].f) < this.heuristic(this.items[largest].f)){
             largest = left;
         }
 
-        if (right <= this.items.length && this.heuristic(items[right]) < this.heuristic(this.items[largest])){
+        if (right <= this.items.length && this.heuristic(items[right].f) < this.heuristic(this.items[largest].f)){
             largest = right;
         }
 
@@ -70,20 +82,19 @@ class MinHeap{
             let temp = this.items[largest];
             this.items[largest] = this.items[index];
             this.items[index] = temp;
-            this.bubbleUp(largest);
+            this.bubbleDown(largest);
         }
 
     }
 
     isEmpty = () =>{
+        if(size === 0){
+            return true;
+        }
+        return false;
 
     }
     getSize = () =>{
-
+        return this.size;
     }
-    getMax = () =>{
-    
-
-    }
-
 }

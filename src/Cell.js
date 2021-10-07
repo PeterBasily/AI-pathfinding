@@ -5,7 +5,7 @@ function Cell(i, j){
   this.visited = false;
 
   this.h;
-  this.f;
+  this.f = Infinity;
   this.tree;
   this.search;
   this.g = Infinity;
@@ -27,9 +27,6 @@ function Cell(i, j){
       rect(x, y, 10, 10);
     }
 
-   
-    
-   
     
   }
   this.highLight = function(fillColor){
@@ -66,6 +63,9 @@ function Cell(i, j){
     return neighbors[r];
 
 
+  }
+  function mDistance(cell){
+    this.h = (this.i-cell.i) + (this.j-cell.j);
   }
 }
     
