@@ -4,3 +4,18 @@ h1{
 select#MazeSelect{
     width : 200px;
 }
+#parent{
+    position:absolute;
+    z-index:0;
+}
+#search_selection label{
+    display:block;
+}
+#search_selection{
+    margin-bottom:50px;
+}
+/*
+#maze_selection{
+    z-index:1;
+}
+*/
