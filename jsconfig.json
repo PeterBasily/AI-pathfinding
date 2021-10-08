@@ -3,5 +3,5 @@
     "*.js",
     "libraries/*.js",
     "/home/philip/.vscode/extensions/samplavigne.p5-vscode-1.2.8/p5types/global.d.ts"
-  ]
+, "src/testCell.js", "src/test.js"  ]
 }

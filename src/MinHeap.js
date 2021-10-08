@@ -1,6 +1,6 @@
 class MinHeap{
-    constructor(heuristic){
-        this.heuristic = heuristic;
+    constructor(priorityFunction){
+        this.priorityFunction = priorityFunction;
         this.items = [];
         this.size = 0;
     }
@@ -25,7 +25,7 @@ class MinHeap{
         else {
             parent = (index-2)/2;
         }
-        if(this.heuristic(this.items[index]) < this.heuristic(this.items[parent])){
+        if(this.priorityFunction(this.items[index]) < this.priorityFunction(this.items[parent])){
             let temp = this.items[parent];
             this.items[parent] = this.items[index];
             this.items[index] = temp;
@@ -38,10 +38,11 @@ class MinHeap{
     remove = (cell) =>{
         let index = this.items.indexOf(cell)
         if (index === -1){
-            console.log("Item not found")
+            //console.log("Item not found");
+            return;     //NOTE: if cell is in items, remove. Otherwise returns undefined
         }
         else{
-            let lastIndex = this.size - 1
+            let lastIndex = this.size - 1;
             this.items[index] = this.items[lastIndex];
             this.items.pop();
             
@@ -58,11 +59,11 @@ class MinHeap{
         let right = 2 * (index + 1);
         let largest = index;
 
-        if (left <= this.items.length && this.heuristic(this.items[left]) < this.heuristic(this.items[largest])){
+        if (left <= this.items.length && this.items[left] < this.priorityFunction(this.items[largest])){
             largest = left;
         }
 
-        if (right <= this.items.length && this.heuristic(items[right]) < this.heuristic(this.items[largest])){
+        if (right <= this.items.length && this.priorityFunction(this.items[right]) < this.priorityFunction(this.items[largest])){
             largest = right;
         }
 
@@ -70,7 +71,7 @@ class MinHeap{
             let temp = this.items[largest];
             this.items[largest] = this.items[index];
             this.items[index] = temp;
-            this.bubbleUp(largest);
+            this.bubbleDown(largest);
         }
 
     }
@@ -86,4 +87,7 @@ class MinHeap{
 
     }
 
+    peek = (i) => {
+        return this.items[i];
+    }
 }

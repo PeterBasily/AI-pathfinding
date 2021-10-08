@@ -10,7 +10,10 @@ var r;
 var r2;
 var start;
 var finish;
-var forward;
+var forward;  //not used anywhere?
+var openList;
+var closed;
+var counter;
 
 function init() {
   reset = true;
@@ -98,7 +101,7 @@ function setup() {
   //canvas.position((windowWidth - 1010) / 2 );
   init();
   var dropdown = document.getElementById("MazeSelect");
-  for (var i = 0; i < 50; i++) {
+  for (let i = 0; i < 50; i++) {
     var newOption = document.createElement('option');
     newOption.text = i;
     newOption.value = i;
@@ -113,26 +116,118 @@ function setGrid(value) {
   finish = undefined;
 }
 
-//Need to add tie breaking buttons and logic
-function runSearch(){
-  if(start == undefined || finish == undefined){
+//NOTE: Need to add tie breaking buttons and logic
+function runSearch() {
+  if (start == undefined || finish == undefined) {
     alert("Start/Goal not selected. Find two open nodes and try again!");
   }
   var searchType;
   var radioGroup = document.getElementsByName("searchType");
-  for(const rButton of radioGroup){
-    if(rButton.checked){
+  for (const rButton of radioGroup) {
+    if (rButton.checked) {
       searchType = rButton.value;
     }
   }
-  //Remove eventually
-  if(searchType == undefined){
-    alert("You done messed up!");
+
+  //NOTE: add tie breaking buttons
+  {
+
   }
-  
+
+  //NOTE: Remove eventually
+  if (searchType == undefined) {
+    alert("SearchType input not working");
+  }
+
+  counter = 0;
+  var cur = start;    //s_start
+  while (cur != finish) {
+    cur.visited = true;
+    counter++;
+    cur.g = 0;
+    cur.search = counter;
+    //finish.g = Infinity;  //NOTE: Done in constructor
+    openList = new MinHeap(getFValue);
+    closed = [];
+    cur.f = cur.g + cur.h(finish);
+    openList.insert(cur);
+    computePath();
+
+    if (openList.size == 0) {
+      //NOTE: sanity check
+      if (goal.tree != undefined) {
+        alert("Error: Open List empty with goal reachable");
+      }
+      return;
+    }
+    var path = [];
+    let temp = goal;
+    while (temp != undefined) {
+      path.push(temp);
+      temp = temp.tree;
+    }
+    while (!cur.blocked) {
+      cur = path[i++];
+      cur.highlight('blue');
+    }
+  }
+
 
 }
 
+function computePath(tieBreak) {
+  let s;
+  while (s = (openList.peek(0)) != undefined) {
+    //check for duplicate f values and break ties
+    if (openList.size > 1) {
+      let i = 1;
+      while (s.f == openList.peek(i).f) {
+        s = tieBreak(s, f);
+      }
+    }
+
+    openList.remove(s);
+
+    s.highlight('yellow');
+
+    if (finish.g <= s.f) {
+      return;
+    }
+    closed.push(s);
+    //naively look for neighbors if an unvisited node is being expanded
+    //ignore blocked cells if the node being expanded is visted (starting node)
+    if (s.visited) {
+      visitable = s.getVisitableNeighbors(grid);
+    }
+    else {
+      visitable = s.getNeighbors(grid);
+    }
+
+    for (const succ of visitable) {
+      if (succ.search < counter) {
+        succ.g = Infinity;
+        succ.search = counter;
+      }
+      if (succ.g > (s.g + 1)) {
+        succ.g = (s.g + 1);
+        succ.tree = s;
+        openList.remove(succ);
+        succ.f = succ.g + succ.h(finish);
+        openList.insert(succ);
+      }
+    }
+  }
+}
+
+function tieBreak(c1, c2) {
+  if (c1.f == c2.f) {
+    return;
+  }
+  if (c1.f > c2.f) {
+    return c1;
+  }
+  return c2;
+}
 
 function draw() {
 
@@ -143,13 +238,6 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
-
-
-
-
-
-
-
 }
 
 

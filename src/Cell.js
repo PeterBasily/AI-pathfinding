@@ -4,13 +4,19 @@ function Cell(i, j){
   this.blocked = true;
   this.visited = false;
 
-  this.h;
   this.f;
   this.tree;
-  this.search;
+  this.search = 0;
   this.g = Infinity;
 
-  
+  this.h = function(goal){
+    return Math.abs(goal.i - this.i) + Math.abs(goal.j - this.j);
+  }
+
+  this.getFValue = function(){
+    return this.f;
+  }
+
   this.show = function(){
 
     x = this.i * 10;
@@ -26,11 +32,6 @@ function Cell(i, j){
       fill(0,0,0);
       rect(x, y, 10, 10);
     }
-
-   
-    
-   
-    
   }
   this.highLight = function(fillColor){
     x = this.i * 10;
@@ -65,8 +66,40 @@ function Cell(i, j){
     var r = floor(random(0, neighbors.length));
     return neighbors[r];
 
+  }
 
+  this.getNeighbors = function(grid){
+    var neighbors = [];
+
+    
+    neighbors.push(grid[index(i, j-1)]);
+    neighbors.push(grid[index(i+1,j)]);
+    neighbors.push(grid[index(i, j+1)]);
+    neighbors.push(grid[index(i-1,j)]);
+
+    return neighbors;
+  }
+
+  this.getVisitableUnblocked = function(grid){
+    var temp = this.getNeighbors(grid);
+
+    for(let i = 0; i < allNeighbors.length; i++){
+      if(allNeighbors[i] && !allNeighbors[i].blocked){
+        temp.push(allNeighbors[i]);
+      }
+    }
+    return temp;
   }
 }
+
+function getFValue(cell){
+  return cell.f;
+}
+
+function getGValue(cell){
+  return cell.g;
+}
+
+
     
   
