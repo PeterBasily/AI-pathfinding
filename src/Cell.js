@@ -78,7 +78,7 @@ class Cell{
 
   }
   mDistance = (cell) => {
-    this.h = (this.i-cell.i) + (this.j-cell.j);
+    this.h = Math.abs((this.i-cell.i) + (this.j-cell.j));
   }
 }
     
