@@ -106,6 +106,7 @@ function setStartAndFinish() {
   var r2 = floor(random(0, grid.length))
   start = grid[r];
   finish = grid[r2];
+  
   while (start.blocked || finish.blocked) {
     r = floor(random(0, grid.length))
     r2 = floor(random(0, grid.length))
@@ -113,13 +114,14 @@ function setStartAndFinish() {
     finish = grid[r2]
 
   }
+  
   start.f = 0;
-  console.log(start)
-  console.log(finish)
 
 }
 function setGrid(value) {
-  grid = allGrids[value];console.log(searchType);
+  grid = allGrids[value];
+  start = undefined;
+  finish = undefined;
 }
 
 
