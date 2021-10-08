@@ -5,19 +5,17 @@ var visitedCells = [];
 var current;
 var canvas;
 var reset;
-var startSearch = false;
 var r;
 var r2;
 var start;
 var finish;
-var forward;  //not used anywhere?
 var openList;
 var closedList;
 var counter;
 var blankGrid = true;
 
 function init() {
-  reset = true;
+  //reset = true;   NOTE: not used, delete if needed
   for (let k = 0; k < 50; k++) {
     allGrids[k] = [];
     for (let j = 0; j < 101; j++) {
@@ -172,6 +170,7 @@ function runSearch() {
       if (finish.tree != undefined) {
         alert("Error: Open List empty with goal reachable");
       }
+      alert("No valid paths exist");
       return;
     }
     var path = [];
@@ -181,8 +180,8 @@ function runSearch() {
       temp = temp.tree;
     }
     let i = 0;
-    while (!cur.blocked && path[i] != undefined) {
-      cur = path[i++];
+    while (!cur.blocked && path[i++] != undefined) {
+      cur = path[path.length - i];
       cur.visited = true;
       cur.highLight('blue');
     }
@@ -213,14 +212,6 @@ function computePath(tieBreak) {
       let i = 1;
       while (i < openList.size && s.f == openList.peek(i).f) {
         s = tieBreak(s, openList.peek(i++));
-        /*
-        if(openList.peek(i) == undefined){    //NOTE: remove
-          debugger;
-        }
-        if(s == undefined){
-          debugger;
-        }
-        */
       }
     }
 
@@ -262,6 +253,7 @@ function computePath(tieBreak) {
 
 //resets values to their defaults so search can be ran on the same grid
 function cleanup() {
+  counter = 0;
   for (const cell of grid) {
     cell.g = Infinity;
     cell.search = 0;
