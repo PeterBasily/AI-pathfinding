@@ -13,6 +13,7 @@ var openList;
 var closedList;
 var counter;
 var blankGrid = true;
+var clearLastSearch = false;
 
 function init() {
   //reset = true;   NOTE: not used, delete if needed
@@ -25,7 +26,7 @@ function init() {
       }
     }
   }
-  for (i = 0; i < 50; i++) {
+  for (let i = 0; i < 50; i++) {
     visitedCells = [];
     grid = allGrids[i];
     var r = floor(random(0, grid.length))
@@ -62,11 +63,17 @@ function init() {
 function run() {
   canvas.position((windowWidth - 1010) / 2, 100);
 
-  if (blankGrid) {
+  if (blankGrid || clearLastSearch) {
     background(100);
-    for (i = 0; i < grid.length; i++) {
+    for (let i = 0; i < grid.length; i++) {
       grid[i].show();
     }
+  }
+  if (start) {
+    start.highLight('red');
+  }
+  if (finish) {
+    finish.highLight('orange');
   }
 }
 
@@ -79,19 +86,20 @@ function setStartAndFinish() {
   while (start.blocked || finish.blocked) {
     r = floor(random(0, grid.length))
     r2 = floor(random(0, grid.length))
-    start = grid[r]
-    finish = grid[r2]
+    start = grid[r];
+    finish = grid[r2];
 
   }
-  console.log(start)
-  console.log(finish)
+  console.log(start);
+  console.log(finish);
+  clearLastSearch = true;
 }
 
 
 
 
 function setup() {
-  frameRate(60)
+  frameRate(300);
   canvas = createCanvas(1010, 1010, P2D);
   canvas.parent('canvas_parent');
   canvas.elt.style.position = 'fixed';
@@ -126,6 +134,13 @@ function getFValue(cell) {
   return cell.f;
 }
 
+function startSearch(){
+  clearLastSearch = true;
+  run();
+  clearLastSearch = false;
+  runSearch();
+}
+
 //NOTE: Need to add tie breaking buttons and logic
 function runSearch() {
   if (start == undefined || finish == undefined) {
@@ -148,10 +163,10 @@ function runSearch() {
   if (searchType == undefined) {
     alert("SearchType input not working");
   }
-
+  blankGrid = false;  //flag to prevent draw() overwriting search
   counter = 0;
   var cur = start;    //s_start
-  cur.visited = true;
+  cur.walked = true;
   while (cur != finish) {
     counter++;
     cur.g = 0;
@@ -171,37 +186,54 @@ function runSearch() {
         alert("Error: Open List empty with goal reachable");
       }
       alert("No valid paths exist");
-      return;
+      cleanup();
+      break;
     }
+
+    //reconstructing path (NOTE: put this in a function later)
     var path = [];
     let temp = finish;
     while (temp != cur) {
       path.push(temp);
       temp = temp.tree;
     }
-    let i = 0;
-    while (!cur.blocked && path[i++] != undefined) {
+    let i = 1;
+    while (!path[path.length - i].blocked) {
       cur = path[path.length - i];
-      cur.visited = true;
-      cur.highLight('blue');
+      cur.walked = true;
+      cur.highLight('pink');  //DEBUG
+      i++;
+      if(path[path.length - i] == finish){
+        cur = finish;
+        break;
+      }
+
     }
-    if (cur.blocked) {
-      cur = cur.tree;
-    }
+    
+    path[path.length - i].walked = true;
+  }
+  //draw path
+  path = [];
+  let temp = finish;
+  while (temp != start) {
+      path.push(temp);
+      temp = temp.tree;
+  }
+  let i = 1;
+  while(path[path.length - i] != finish){
+    cur = path[path.length - i];
+    cur.highlight("blue");
+    i++;
   }
   cleanup();
-  blankGrid = false;
 }
 
 //temporary tiebreaking based on h
 function tieBreak(c1, c2) {
-  if (c1.h == c2.h) {
-    return;
+  if (c1.h(finish) > c2.h(finish)) {
+    return c2;
   }
-  if (c1.h < c2.h) {
-    return c1;
-  }
-  return c2;
+  return c1;
 }
 
 function computePath(tieBreak) {
@@ -212,12 +244,20 @@ function computePath(tieBreak) {
       let i = 1;
       while (i < openList.size && s.f == openList.peek(i).f) {
         s = tieBreak(s, openList.peek(i++));
+        /*    DEBUG
+        if(openList.peek(i) == undefined){
+          debugger;
+        }
+        if(s == undefined){
+          debugger;
+        }
+        */
       }
     }
 
     openList.remove(s);
 
-    if (s != start) {
+    if (s != start && s != finish && !s.blocked && !s.walked) {
       s.highLight('yellow');
     }
 
@@ -228,7 +268,7 @@ function computePath(tieBreak) {
     //naively look for neighbors if an unvisited node is being expanded
     //ignore blocked cells if the node being expanded is visted (starting node)
     let visitable;
-    if (s.visited) {
+    if (s.walked) {
       visitable = s.getVisitable(grid);
     }
     else {
@@ -236,12 +276,18 @@ function computePath(tieBreak) {
     }
 
     for (const succ of visitable) {
+      if(succ == undefined){  //edge of board
+        continue;
+      }
       if (succ.search < counter) {
         succ.g = Infinity;
         succ.search = counter;
       }
-      if (succ.g > (s.g + 1)) {
-        succ.g = (s.g + 1);
+      if(s.actionCost(succ, grid) == Infinity){
+        continue;
+      }
+      if (succ.g > (s.g + s.actionCost(succ, grid))) {
+        succ.g = (s.g + s.actionCost(succ, grid));
         succ.tree = s;
         openList.remove(succ);
         succ.f = succ.g + succ.h(finish);
@@ -253,12 +299,13 @@ function computePath(tieBreak) {
 
 //resets values to their defaults so search can be ran on the same grid
 function cleanup() {
+  debugger;
   counter = 0;
   for (const cell of grid) {
     cell.g = Infinity;
     cell.search = 0;
     cell.tree = undefined;
-    cell.visited = false;
+    cell.walked = false;
   }
 }
 
