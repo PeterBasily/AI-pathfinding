@@ -168,24 +168,25 @@ function runSearch(){
               neighbors[i].parent = current;
               neighbors[i].g = g;
               neighbors[i].h = h
-              neighbors[i].f = f
+              neighbors[i].f = f;
+              heap.insert(neighbors[i]);
             }
             
         }
           
-          
-        for(let i = 0; i < neighbors.length; i++){
-          if(!neighbors[i].visited && !heap.has(neighbors[i])){
-              heap.insert(neighbors[i])
-            }
-          }
-          
-        }        
+      }     
   
-        current = heap.extractMin();
-        if(current.compareTo(finish)){
-          searching = false;
+        if(heap.getSize() > 0){
+          current = heap.extractMin();
+          if(current.compareTo(finish)){
+            searching = false;
+          }
         }
+        else{
+          alert("Can't find route")
+        }
+       
+       
        
   
     }
@@ -244,7 +245,7 @@ function draw() {
     }
   }
   if (start) {
-    start.highLight('red');
+    start.highLight('purple');
   }
   if (finish) {
     finish.highLight('orange');

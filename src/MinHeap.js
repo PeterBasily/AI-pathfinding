@@ -73,29 +73,35 @@ class MinHeap{
     }
 
     bubbleDown = (index) =>{
-        let left = 2 * (index + 1) - 1;
-        let right = 2 * (index + 1);
-        let largest = index;
-        if(!(this.items[left] && this.items[right]))
-        {
+        let left = 2 * index;
+        let right = 2 * index + 1;
+        let smallest = index;
+        
+        if (this.items[left] && (left <= this.items.length && this.heuristic(this.items[left].f) < this.heuristic(this.items[smallest].f))){
+            smallest = left;
+        }
+        else if(this.items[left] && (left <= this.items.length && this.heuristic(this.items[left].f) === this.heuristic(this.items[smallest].f))){
+            if(this.items[left].h < this.items[smallest.h]){
+                smallest = left;
+            }
+        }
 
+        if (this.items[right] && (right <= this.items.length && this.heuristic(this.items[right].f) < this.heuristic(this.items[smallest].f))){
+            smallest = right;
         }
-        else{
-            if (left <= this.items.length && this.heuristic(this.items[left].f) < this.heuristic(this.items[largest].f)){
-                largest = left;
-            }
-    
-            if (right <= this.items.length && this.heuristic(this.items[right].f) < this.heuristic(this.items[largest].f)){
-                largest = right;
-            }
-    
-            if (largest != index){
-                let temp = this.items[largest];
-                this.items[largest] = this.items[index];
-                this.items[index] = temp;
-                this.bubbleDown(largest);
+        else if(this.items[right] && (right <= this.items.length && this.heuristic(this.items[right].f) === this.heuristic(this.items[smallest].f))){
+            if(this.items[right].h < this.items[smallest.h]){
+                smallest = right;
             }
         }
+
+        if (smallest != index){
+            let temp = this.items[smallest];
+            this.items[smallest] = this.items[index];
+            this.items[index] = temp;
+            this.bubbleDown(smallest);
+        }
+        
 
         
 
