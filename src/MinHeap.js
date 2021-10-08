@@ -18,6 +18,9 @@ class MinHeap{
 
     }
     bubbleUp = (index) =>{
+        if(index == 0){
+            return;
+        }
         let parent;
         if(index % 2 === 1){
             parent = (index-1)/2;
@@ -46,7 +49,7 @@ class MinHeap{
             this.items[index] = this.items[lastIndex];
             this.items.pop();
             
-            if (heap.items[index]){
+            if (this.items[index]){
                 this.bubbleDown(index);
             }
             this.size--;
@@ -59,11 +62,11 @@ class MinHeap{
         let right = 2 * (index + 1);
         let largest = index;
 
-        if (left <= this.items.length && this.items[left] < this.priorityFunction(this.items[largest])){
+        if (left < this.items.length && this.priorityFunction(this.items[left]) < this.priorityFunction(this.items[largest])){
             largest = left;
         }
 
-        if (right <= this.items.length && this.priorityFunction(this.items[right]) < this.priorityFunction(this.items[largest])){
+        if (right < this.items.length && this.priorityFunction(this.items[right]) < this.priorityFunction(this.items[largest])){
             largest = right;
         }
 
@@ -73,17 +76,6 @@ class MinHeap{
             this.items[index] = temp;
             this.bubbleDown(largest);
         }
-
-    }
-
-    isEmpty = () =>{
-
-    }
-    getSize = () =>{
-
-    }
-    getMax = () =>{
-    
 
     }
 

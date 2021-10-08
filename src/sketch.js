@@ -12,8 +12,9 @@ var start;
 var finish;
 var forward;  //not used anywhere?
 var openList;
-var closed;
+var closedList;
 var counter;
+var blankGrid = true;
 
 function init() {
   reset = true;
@@ -63,12 +64,12 @@ function init() {
 function run() {
   canvas.position((windowWidth - 1010) / 2, 100);
 
-
-  background(100);
-  for (i = 0; i < grid.length; i++) {
-    grid[i].show();
+  if (blankGrid) {
+    background(100);
+    for (i = 0; i < grid.length; i++) {
+      grid[i].show();
+    }
   }
-
 }
 
 
@@ -114,6 +115,17 @@ function setGrid(value) {
   grid = allGrids[value];
   start = undefined;
   finish = undefined;
+  blankGrid = true;
+}
+
+function getFValue(cell) {
+  if (cell == undefined) {
+    debugger;
+  }
+  if (cell.f == undefined) {
+    debugger;
+  }
+  return cell.f;
 }
 
 //NOTE: Need to add tie breaking buttons and logic
@@ -131,7 +143,7 @@ function runSearch() {
 
   //NOTE: add tie breaking buttons
   {
-
+    var tieBreakingFunction = tieBreak;
   }
 
   //NOTE: Remove eventually
@@ -141,63 +153,92 @@ function runSearch() {
 
   counter = 0;
   var cur = start;    //s_start
+  cur.visited = true;
   while (cur != finish) {
-    cur.visited = true;
     counter++;
     cur.g = 0;
     cur.search = counter;
+    finish.g = Infinity;
+    finish.search = counter;
     //finish.g = Infinity;  //NOTE: Done in constructor
     openList = new MinHeap(getFValue);
-    closed = [];
+    closedList = [];
     cur.f = cur.g + cur.h(finish);
     openList.insert(cur);
-    computePath();
+    computePath(tieBreakingFunction);
 
     if (openList.size == 0) {
       //NOTE: sanity check
-      if (goal.tree != undefined) {
+      if (finish.tree != undefined) {
         alert("Error: Open List empty with goal reachable");
       }
       return;
     }
     var path = [];
-    let temp = goal;
-    while (temp != undefined) {
+    let temp = finish;
+    while (temp != cur) {
       path.push(temp);
       temp = temp.tree;
     }
-    while (!cur.blocked) {
+    let i = 0;
+    while (!cur.blocked && path[i] != undefined) {
       cur = path[i++];
-      cur.highlight('blue');
+      cur.visited = true;
+      cur.highLight('blue');
+    }
+    if (cur.blocked) {
+      cur = cur.tree;
     }
   }
+  cleanup();
+  blankGrid = false;
+}
 
-
+//temporary tiebreaking based on h
+function tieBreak(c1, c2) {
+  if (c1.h == c2.h) {
+    return;
+  }
+  if (c1.h < c2.h) {
+    return c1;
+  }
+  return c2;
 }
 
 function computePath(tieBreak) {
-  let s;
-  while (s = (openList.peek(0)) != undefined) {
+  var s;
+  while ((s = openList.peek(0)) != undefined) {
     //check for duplicate f values and break ties
     if (openList.size > 1) {
       let i = 1;
-      while (s.f == openList.peek(i).f) {
-        s = tieBreak(s, f);
+      while (i < openList.size && s.f == openList.peek(i).f) {
+        s = tieBreak(s, openList.peek(i++));
+        /*
+        if(openList.peek(i) == undefined){    //NOTE: remove
+          debugger;
+        }
+        if(s == undefined){
+          debugger;
+        }
+        */
       }
     }
 
     openList.remove(s);
 
-    s.highlight('yellow');
+    if (s != start) {
+      s.highLight('yellow');
+    }
 
     if (finish.g <= s.f) {
       return;
     }
-    closed.push(s);
+    closedList.push(s);
     //naively look for neighbors if an unvisited node is being expanded
     //ignore blocked cells if the node being expanded is visted (starting node)
+    let visitable;
     if (s.visited) {
-      visitable = s.getVisitableNeighbors(grid);
+      visitable = s.getVisitable(grid);
     }
     else {
       visitable = s.getNeighbors(grid);
@@ -219,18 +260,17 @@ function computePath(tieBreak) {
   }
 }
 
-function tieBreak(c1, c2) {
-  if (c1.f == c2.f) {
-    return;
+//resets values to their defaults so search can be ran on the same grid
+function cleanup() {
+  for (const cell of grid) {
+    cell.g = Infinity;
+    cell.search = 0;
+    cell.tree = undefined;
+    cell.visited = false;
   }
-  if (c1.f > c2.f) {
-    return c1;
-  }
-  return c2;
 }
 
 function draw() {
-
   run();
   if (start) {
     start.highLight('red');
