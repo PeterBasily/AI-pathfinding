@@ -10,6 +10,7 @@ var searchType; //the search type
 var searching = false; //bool used to start search
 var heap; //The binary heap we are using to store our open list
 var dropdown;
+var current;
 
 /*Utility functions */ 
 function init() {
@@ -44,7 +45,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.2) {
+        if (rand <= 0.05) {
           current.blocked = true;
         }
         else {
@@ -115,7 +116,10 @@ function setStartAndFinish() {
 
   }
   
-  start.f = 0;
+  start.g = 0;
+  start.h = start.mDistance(finish);
+  start.f = start.h;
+  current = start;
 
 }
 function setGrid(value) {
@@ -124,28 +128,76 @@ function setGrid(value) {
   finish = undefined;
 }
 
+function constructPath(cell){
+  let path = [];
+  let temp = cell;
+  while(temp.parent != undefined){
+    path.push(temp.parent);
+    temp = temp.parent;
+    
+  }
+  return path;
+}
+
 
 function runSearch(){
   
-  //Remove eventually
-  if(searching == false){
-    
+  if(!searching){
+    return;
   }
   else{
     if(searchType === 'forward'){
+      if(current.blocked){
+        current = heap.extractMin();
+      }
       
+        current.visited = true;
+        var neighbors = current.neighbors;
+        for(let i = 0; i < neighbors.length; i++){
+          if(!neighbors[i].visited){
+            var g = current.g + 1;
+            var h = neighbors[i].mDistance(finish);
+            var f = h + g;
+            if(heap.has(neighbors[i]) && neighbors[i].f > f ){
+              neighbors[i].f = f;
+              neighbors[i].g = g;
+              neighbors[i].parent = current;
 
+            }
+            else if(!heap.has(neighbors[i])){
+              neighbors[i].parent = current;
+              neighbors[i].g = g;
+              neighbors[i].h = h
+              neighbors[i].f = f
+            }
+            
+        }
+          
+          
+        for(let i = 0; i < neighbors.length; i++){
+          if(!neighbors[i].visited && !heap.has(neighbors[i])){
+              heap.insert(neighbors[i])
+            }
+          }
+          
+        }        
+  
+        current = heap.extractMin();
+        if(current.compareTo(finish)){
+          searching = false;
+        }
+       
+  
     }
+    
+    
     else if(searchType === 'backward'){
   
     }
     else if(searchType === 'adaptive'){
   
     }
-    if(succ === finish){
-      searching === false;
-  
-    }
+    
 
   }
   
@@ -177,14 +229,27 @@ function setup() {
 
 function draw() {
 
+  
   run();
+  runSearch();
+  if(current){
+    path = constructPath(current);
+    for(let i = 0; i < path.length; i++){
+      path[i].highLight('blue')
+    }
+  }
+  if(heap){
+    for(let i = 0; i < heap.items.length; i++){
+      heap.items[i].highLight('green')
+    }
+  }
   if (start) {
     start.highLight('red');
   }
   if (finish) {
     finish.highLight('orange');
   }
-  
+
 
   
 

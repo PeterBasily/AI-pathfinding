@@ -25,7 +25,13 @@ class MinHeap{
         else {
             parent = (index-2)/2;
         }
-        if(this.heuristic(this.items[index].f) < this.heuristic(this.items[parent].f)){
+        if(!this.items[parent]){
+
+        }
+        else if(this.heuristic(this.items[index].f) < this.heuristic(this.items[parent].f)
+                || (this.heuristic(this.items[index].f) === this.heuristic(this.items[parent].f))
+                && (this.heuristic(this.items[index].h) < this.heuristic(this.items[parent].h)))
+        {
             let temp = this.items[parent];
             this.items[parent] = this.items[index];
             this.items[index] = temp;
@@ -34,6 +40,7 @@ class MinHeap{
 
         }
     }
+     
 
     remove = (cell) =>{
         let index = this.items.indexOf(cell)
@@ -69,26 +76,44 @@ class MinHeap{
         let left = 2 * (index + 1) - 1;
         let right = 2 * (index + 1);
         let largest = index;
+        if(!(this.items[left] && this.items[right]))
+        {
 
-        if (left <= this.items.length && this.heuristic(this.items[left].f) < this.heuristic(this.items[largest].f)){
-            largest = left;
+        }
+        else{
+            if (left <= this.items.length && this.heuristic(this.items[left].f) < this.heuristic(this.items[largest].f)){
+                largest = left;
+            }
+    
+            if (right <= this.items.length && this.heuristic(this.items[right].f) < this.heuristic(this.items[largest].f)){
+                largest = right;
+            }
+    
+            if (largest != index){
+                let temp = this.items[largest];
+                this.items[largest] = this.items[index];
+                this.items[index] = temp;
+                this.bubbleDown(largest);
+            }
         }
 
-        if (right <= this.items.length && this.heuristic(items[right].f) < this.heuristic(this.items[largest].f)){
-            largest = right;
-        }
-
-        if (largest != index){
-            let temp = this.items[largest];
-            this.items[largest] = this.items[index];
-            this.items[index] = temp;
-            this.bubbleDown(largest);
-        }
+        
 
     }
-
+    getItems = () =>{
+        return this.items;
+    }
+    has = (cell) =>{
+        for(let i = 0; i < this.items.length; i++){
+            if(this.items[i].compareTo(cell)){
+                return true;
+            }
+        }
+        return false;
+    }
+    
     isEmpty = () =>{
-        if(size === 0){
+        if(this.size === 0){
             return true;
         }
         return false;

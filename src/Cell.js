@@ -1,20 +1,25 @@
 class Cell{
+ 
+ 
+  
   constructor(i, j)
-{
-  this.neighbors = [];
-  this.i = i;
-  this.j = j;
-  this.blocked = true;
-  this.visited = false;
+  { 
+    this.blocked;
+    this.visited;
+    this.h;
+    this.f = Infinity;
+    this.g;
+    this.neighbors = [];
+    this.i = i;
+    this.j = j;
+    this.blocked = true;
+    this.visited = false;
+    this.tree;
+    this.search;
+    this.parent = undefined;
 
-  this.h;
-  this.f = Infinity;
-  this.tree;
-  this.search;
-  this.g = Infinity;
-  this.parent = undefined;
-
-}  
+  } 
+  
 
   
   show = function(){
@@ -22,7 +27,11 @@ class Cell{
     var x = this.i * 10;
     var y = this.j * 10;
     stroke(255);
-    if(this.blocked){
+    if(this.visited && !this.blocked){
+      fill('red')
+      rect(x,y,10,10)
+    }
+    else if(this.blocked){
       
       noFill();
       rect(x, y, 10, 10);
@@ -78,7 +87,13 @@ class Cell{
 
   }
   mDistance = (cell) => {
-    this.h = Math.abs((this.i-cell.i) + (this.j-cell.j));
+    return (Math.abs((this.i-cell.i)) + Math.abs(this.j-cell.j));
+  }
+  compareTo = (cell) => {
+    if(this.i === cell.i && this.j === cell.j){
+      return true;
+    }
+    return false;
   }
 }
     
