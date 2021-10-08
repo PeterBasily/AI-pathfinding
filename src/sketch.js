@@ -9,7 +9,7 @@ var finish; //the finishing node
 var searchType; //the search type
 var searching = false; //bool used to start search
 var heap; //The binary heap we are using to store our open list
-
+var dropdown;
 
 /*Utility functions */ 
 function init() {
@@ -81,7 +81,9 @@ function selectSearch(){
     }
       
       document.getElementById('runSearch').disabled = true;
-      console.log(searchType);
+      document.getElementById('reset').disabled = true;
+      document.getElementById('setStart').disabled = true;
+      document.getElementById('MazeSelect').disabled = true;
       searching = true;
   }
   
@@ -117,22 +119,17 @@ function setStartAndFinish() {
 
 }
 function setGrid(value) {
-  grid = allGrids[value];
-  for(let i = 0; i < grid.length; i++){
-    grid[i].visited = false;
-  }
-  start = undefined;
-  finish = undefined;
+  grid = allGrids[value];console.log(searchType);
 }
 
-//Need to add tie breaking buttons and logic
+
 function runSearch(){
   
   //Remove eventually
-  if(searchType == undefined){
-    alert("You done messed up!");
+  if(searching == false){
+    
   }
-  else if(searching === true){
+  else{
     if(searchType === 'forward'){
       
 
@@ -163,9 +160,8 @@ function setup() {
   canvas.elt.style.position = 'fixed';
   canvas.style('top', 100);
   canvas.style('left', (windowWidth - 1010) / 2);
-  //canvas.position((windowWidth - 1010) / 2 );
   init();
-  var dropdown = document.getElementById("MazeSelect");
+  dropdown = document.getElementById("MazeSelect");
   for (var i = 0; i < 50; i++) {
     var newOption = document.createElement('option');
     newOption.text = i;
@@ -195,5 +191,4 @@ function draw() {
 
 
 }
-
 
