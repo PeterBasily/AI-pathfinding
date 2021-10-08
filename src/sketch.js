@@ -1,4 +1,3 @@
-
 var allGrids = [];
 var grid;
 var visitedCells = [];
@@ -11,9 +10,11 @@ var r2;
 var start;
 var finish;
 var forward;
-var heap = new MinHeap(Math.floor);
-
+var searchType;
+var searching = false;
+var heap; 
 function init() {
+  heap = new MinHeap(Math.floor);
   reset = true;
   for (let k = 0; k < 50; k++) {
     allGrids[k] = [];
@@ -23,6 +24,10 @@ function init() {
         allGrids[k].push(cell);
       }
     }
+    for(let i = 0; i < allGrids[k].length; i++){
+      allGrids[k][i].makeNeighbors(allGrids[k]);
+    }
+
   }
   for (i = 0; i < 50; i++) {
     visitedCells = [];
@@ -31,9 +36,10 @@ function init() {
     current = grid[r];
     current.visited = true;
     visitedCells.push(current);
+    
     while (visitedCells.length > 0) {
       current.visited = true;
-      var next = current.checkNeighbors(grid);
+      var next = current.checkNeighbors();
       if (next) {
         next.visited = true;
         visitedCells.push(current);
@@ -58,6 +64,26 @@ function init() {
   visitedCells = [];
   for(let i = 0; i < grid.length; i++){
     grid[i].visited = false;
+  }
+  
+}
+function selectSearch(){
+  if(start == undefined || finish == undefined){
+    alert("Start/Goal not selected. Find two open nodes and try again!");
+  }
+  else{
+  var elements = document.getElementsByTagName('input');
+    for(i = 0; i < elements.length; i++){
+      if(elements[i].checked){
+        searchType = elements[i].value;
+      }
+      elements[i].disabled = true;
+
+    }
+      
+      document.getElementById('runSearch').disabled = true;
+      console.log(searchType);
+      searching = true;
   }
   
 }
@@ -86,8 +112,10 @@ function setStartAndFinish() {
     finish = grid[r2]
 
   }
+  start.f = 0;
   console.log(start)
   console.log(finish)
+
 }
 
 
@@ -123,20 +151,29 @@ function setGrid(value) {
 
 //Need to add tie breaking buttons and logic
 function runSearch(){
-  if(start == undefined || finish == undefined){
-    alert("Start/Goal not selected. Find two open nodes and try again!");
-  }
-  var searchType;
-  var radioGroup = document.getElementsByName("searchType");
-  for(const rButton of radioGroup){
-    if(rButton.checked){
-      searchType = rButton.value;
-    }
-  }
+  
   //Remove eventually
   if(searchType == undefined){
     alert("You done messed up!");
   }
+  else if(searching === true){
+    if(searchType === 'forward'){
+      
+
+    }
+    else if(searchType === 'backward'){
+  
+    }
+    else if(searchType === 'adaptive'){
+  
+    }
+    if(succ === finish){
+      searching === false;
+  
+    }
+
+  }
+  
   
 
 }
@@ -151,8 +188,9 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
+  
 
-
+  
 
 
 
