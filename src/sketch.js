@@ -47,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.2) {
+        if (rand <= 0.3) {
           current.blocked = true;
         }
         else {
@@ -136,7 +136,7 @@ function setStartAndFinish() {
   start.g = 0;
   start.h = start.mDistance(finish);
   start.f = start.h;
-  current = start;
+
 
 }
 function setGrid(value) {
@@ -156,7 +156,23 @@ function constructPath(cell){
   }
   return path;
 }
+function endSearch(){
+  searching = false;
+  for(let i = 0; i < path.length; i++){
+    
+  }
+  var elements = document.getElementsByTagName('input');
+  for(i = 0; i < elements.length; i++){
+    elements[i].disabled = false;
+  }
 
+  document.getElementById('runSearch').disabled = false;
+  document.getElementById('reset').disabled = false;
+  document.getElementById('setStart').disabled = false;
+  document.getElementById('MazeSelect').disabled = false;
+  current = start;
+  heap = new MinHeap(compareCells);
+}
 
 function runSearch(){
   
@@ -165,28 +181,18 @@ function runSearch(){
   }
   else{
     if(searchType === 'forward'){
+      if(iterations === 0){
+        current = start;
+      }
       if(current.compareTo(finish)){
-        searching = false;
-        for(let i = 0; i < path.length; i++){
-          console.log(path[i].blocked);
-        }
-        var elements = document.getElementsByTagName('input');
-        for(i = 0; i < elements.length; i++){
-          elements[i].disabled = false;
-        }
-  
-        document.getElementById('runSearch').disabled = false;
-        document.getElementById('reset').disabled = false;
-        document.getElementById('setStart').disabled = false;
-        document.getElementById('MazeSelect').disabled = false;
-        current = undefined;
-        heap = new MinHeap(compareCells);
+        endSearch();
       
       }
     
       else if(current.blocked){
         if(heap.getSize() ===0){
           alert("Can't find route");
+          endSearch();
         }
         else 
           current = heap.extractMin();
@@ -223,7 +229,7 @@ function runSearch(){
       }
       else{
         alert("Can't find route");
-        
+        endSearch();
       }
       }
       
