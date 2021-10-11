@@ -1,6 +1,6 @@
 class MinHeap{
-    constructor(heuristic){
-        this.heuristic = heuristic;
+    constructor(fn){
+        this.fn = fn;
         this.items = [];
         this.size = 0;
     }
@@ -18,19 +18,12 @@ class MinHeap{
 
     }
     bubbleUp = (index) =>{
-        let parent;
-        if(index % 2 === 1){
-            parent = (index-1)/2;
-        }
-        else {
-            parent = (index-2)/2;
-        }
+        let parent = Math.floor(index/2);
+        
         if(!this.items[parent]){
 
         }
-        else if(this.heuristic(this.items[index].f) < this.heuristic(this.items[parent].f)
-                || (this.heuristic(this.items[index].f) === this.heuristic(this.items[parent].f))
-                && (this.heuristic(this.items[index].h) < this.heuristic(this.items[parent].h)))
+        else if(this.fn(this.items[index],this.items[parent]) < 0)
         {
             let temp = this.items[parent];
             this.items[parent] = this.items[index];
@@ -77,22 +70,12 @@ class MinHeap{
         let right = 2 * index + 1;
         let smallest = index;
         
-        if (this.items[left] && (left <= this.items.length && this.heuristic(this.items[left].f) < this.heuristic(this.items[smallest].f))){
+        if (this.items[left] && (left <= this.items.length && this.fn(this.items[left],this.items[smallest]) < 0)){
             smallest = left;
         }
-        else if(this.items[left] && (left <= this.items.length && this.heuristic(this.items[left].f) === this.heuristic(this.items[smallest].f))){
-            if(this.items[left].h < this.items[smallest.h]){
-                smallest = left;
-            }
-        }
 
-        if (this.items[right] && (right <= this.items.length && this.heuristic(this.items[right].f) < this.heuristic(this.items[smallest].f))){
+        if (this.items[right] && (right <= this.items.length && this.fn(this.items[right],this.items[smallest]) < 0)){
             smallest = right;
-        }
-        else if(this.items[right] && (right <= this.items.length && this.heuristic(this.items[right].f) === this.heuristic(this.items[smallest].f))){
-            if(this.items[right].h < this.items[smallest.h]){
-                smallest = right;
-            }
         }
 
         if (smallest != index){

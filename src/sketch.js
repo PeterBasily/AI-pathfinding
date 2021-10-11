@@ -11,10 +11,11 @@ var searching = false; //bool used to start search
 var heap; //The binary heap we are using to store our open list
 var dropdown;
 var current;
-
+var iterations; //counts the number iterations (cells visited)
+var path = []
 /*Utility functions */ 
 function init() {
-  heap = new MinHeap(Math.floor);
+  heap = new MinHeap(compareCells);
   reset = true;
   for (let k = 0; k < 50; k++) {
     allGrids[k] = [];
@@ -86,8 +87,20 @@ function selectSearch(){
       document.getElementById('setStart').disabled = true;
       document.getElementById('MazeSelect').disabled = true;
       searching = true;
+      resetCells();
   }
   
+  
+}
+function resetCells(){
+  for(let i = 0; i < grid.length;i++){
+    grid[i].f = Infinity;
+    grid[i].h = Infinity;
+    grid[i].g = Infinity;
+    grid[i].visited = false;
+  }
+  path = [];
+
 }
 
 function run() {
@@ -103,6 +116,7 @@ function run() {
 
 
 function setStartAndFinish() {
+  resetCells();
   var r = floor(random(0, grid.length))
   var r2 = floor(random(0, grid.length))
   start = grid[r];
@@ -126,10 +140,11 @@ function setGrid(value) {
   grid = allGrids[value];
   start = undefined;
   finish = undefined;
+  resetCells();
 }
 
 function constructPath(cell){
-  let path = [];
+  let path = [cell];
   let temp = cell;
   while(temp.parent != undefined){
     path.push(temp.parent);
@@ -150,7 +165,7 @@ function runSearch(){
       if(current.blocked){
         current = heap.extractMin();
       }
-      
+        path = constructPath(current);
         current.visited = true;
         var neighbors = current.neighbors;
         for(let i = 0; i < neighbors.length; i++){
@@ -180,11 +195,26 @@ function runSearch(){
           current = heap.extractMin();
           if(current.compareTo(finish)){
             searching = false;
+            var elements = document.getElementsByTagName('input');
+            for(i = 0; i < elements.length; i++){
+              elements[i].disabled = false;
+            }
+      
+            document.getElementById('runSearch').disabled = false;
+            document.getElementById('reset').disabled = false;
+            document.getElementById('setStart').disabled = false;
+            document.getElementById('MazeSelect').disabled = false;
+            current = undefined;
+            heap = new MinHeap(compareCells);
+          
           }
         }
         else{
-          alert("Can't find route")
+          alert("Can't find route");
+          
         }
+        
+        
        
        
        
@@ -204,6 +234,17 @@ function runSearch(){
   
   
 
+}
+function compareCells(cell1, cell2){
+  if(cell1.f === cell2.f){
+    if(cell1.h < cell2.h){
+      return -1;
+    }
+    return 0;
+  }
+  if(cell1.f < cell2.f){
+    return -1;
+  }
 }
 
 /****************SETUP & DRAW FUNCTIONS **********************/
@@ -233,11 +274,9 @@ function draw() {
   
   run();
   runSearch();
-  if(current){
-    path = constructPath(current);
-    for(let i = 0; i < path.length; i++){
+  
+  for(let i = 0; i < path.length; i++){
       path[i].highLight('blue')
-    }
   }
   if(heap){
     for(let i = 0; i < heap.items.length; i++){
