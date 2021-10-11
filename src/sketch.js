@@ -11,9 +11,10 @@ var searching = false; //bool used to start search
 var heap; //The binary heap we are using to store our open list
 var dropdown;
 var current;
-var iterations; //counts the number iterations (cells visited)
+var iterations = 0; //counts the number iterations (cells visited)
 var path = []
 /*Utility functions */ 
+
 function init() {
   heap = new MinHeap(compareCells);
   reset = true;
@@ -46,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.05) {
+        if (rand <= 0.2) {
           current.blocked = true;
         }
         else {
@@ -68,12 +69,14 @@ function init() {
   }
   
 }
+
 function selectSearch(){
   if(start == undefined || finish == undefined){
     alert("Start/Goal not selected. Find two open nodes and try again!");
   }
   else{
-  var elements = document.getElementsByTagName('input');
+    resetCells();
+    var elements = document.getElementsByTagName('input');
     for(i = 0; i < elements.length; i++){
       if(elements[i].checked){
         searchType = elements[i].value;
@@ -87,7 +90,7 @@ function selectSearch(){
       document.getElementById('setStart').disabled = true;
       document.getElementById('MazeSelect').disabled = true;
       searching = true;
-      resetCells();
+      
   }
   
   
@@ -100,6 +103,7 @@ function resetCells(){
     grid[i].visited = false;
   }
   path = [];
+  iterations = 0;
 
 }
 
@@ -116,7 +120,6 @@ function run() {
 
 
 function setStartAndFinish() {
-  resetCells();
   var r = floor(random(0, grid.length))
   var r2 = floor(random(0, grid.length))
   start = grid[r];
@@ -162,11 +165,36 @@ function runSearch(){
   }
   else{
     if(searchType === 'forward'){
-      if(current.blocked){
-        current = heap.extractMin();
+      if(current.compareTo(finish)){
+        searching = false;
+        for(let i = 0; i < path.length; i++){
+          console.log(path[i].blocked);
+        }
+        var elements = document.getElementsByTagName('input');
+        for(i = 0; i < elements.length; i++){
+          elements[i].disabled = false;
+        }
+  
+        document.getElementById('runSearch').disabled = false;
+        document.getElementById('reset').disabled = false;
+        document.getElementById('setStart').disabled = false;
+        document.getElementById('MazeSelect').disabled = false;
+        current = undefined;
+        heap = new MinHeap(compareCells);
+      
       }
-        path = constructPath(current);
+    
+      else if(current.blocked){
+        if(heap.getSize() ===0){
+          alert("Can't find route");
+        }
+        else 
+          current = heap.extractMin();
+      }
+      else{      
         current.visited = true;
+        path = constructPath(current);
+        iterations++;
         var neighbors = current.neighbors;
         for(let i = 0; i < neighbors.length; i++){
           if(!neighbors[i].visited){
@@ -189,34 +217,16 @@ function runSearch(){
             
         }
           
-      }     
-  
-        if(heap.getSize() > 0){
-          current = heap.extractMin();
-          if(current.compareTo(finish)){
-            searching = false;
-            var elements = document.getElementsByTagName('input');
-            for(i = 0; i < elements.length; i++){
-              elements[i].disabled = false;
-            }
+      }    
+      if(heap.getSize() > 0){
+        current = heap.extractMin();
+      }
+      else{
+        alert("Can't find route");
+        
+      }
+      }
       
-            document.getElementById('runSearch').disabled = false;
-            document.getElementById('reset').disabled = false;
-            document.getElementById('setStart').disabled = false;
-            document.getElementById('MazeSelect').disabled = false;
-            current = undefined;
-            heap = new MinHeap(compareCells);
-          
-          }
-        }
-        else{
-          alert("Can't find route");
-          
-        }
-        
-        
-       
-       
        
   
     }
@@ -289,6 +299,7 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
+  document.getElementById('counter').innerHTML = '<h2>cells visited: ' + iterations + '</h2>';
 
 
   
