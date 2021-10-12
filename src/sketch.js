@@ -47,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.3) {
+        if (rand <= 0.2) {
           current.blocked = true;
         }
         else {
@@ -183,6 +183,7 @@ function runSearch(){
     if(searchType === 'forward'){
       if(iterations === 0){
         current = start;
+        current.g = 0;
       }
       if(current.compareTo(finish)){
         endSearch();
@@ -207,10 +208,14 @@ function runSearch(){
             var g = current.g + 1;
             var h = neighbors[i].mDistance(finish);
             var f = h + g;
-            if(heap.has(neighbors[i]) && neighbors[i].f > f ){
+            if(heap.has(neighbors[i]) && (neighbors[i].f > f || (neighbors[i].f === f && neighbors[i].g > g))){
+              heap.remove(neighbors[i]);
               neighbors[i].f = f;
               neighbors[i].g = g;
+              neighbors[i].h = h;
               neighbors[i].parent = current;
+              heap.insert(neighbors[i]);
+              
 
             }
             else if(!heap.has(neighbors[i])){
@@ -253,7 +258,7 @@ function runSearch(){
 }
 function compareCells(cell1, cell2){
   if(cell1.f === cell2.f){
-    if(cell1.h < cell2.h){
+    if(cell1.g < cell2.g){
       return -1;
     }
     return 0;

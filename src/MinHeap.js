@@ -70,11 +70,11 @@ class MinHeap{
         let right = 2 * index + 1;
         let smallest = index;
         
-        if (this.items[left] && (left <= this.items.length && this.fn(this.items[left],this.items[smallest]) < 0)){
+        if (this.items[left] && this.fn(this.items[left],this.items[smallest]) < 0){
             smallest = left;
         }
 
-        if (this.items[right] && (right <= this.items.length && this.fn(this.items[right],this.items[smallest]) < 0)){
+        if (this.items[right] &&  this.fn(this.items[right],this.items[smallest]) < 0){
             smallest = right;
         }
 

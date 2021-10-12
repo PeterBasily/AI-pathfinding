@@ -26,19 +26,19 @@ class Cell{
 
     var x = this.i * 10;
     var y = this.j * 10;
-    stroke(255);
+    stroke(0);
     if(this.visited && !this.blocked){
       fill('red')
       rect(x,y,10,10)
     }
     else if(this.blocked){
-      
-      noFill();
+      stroke(255)
+      fill(0);
       rect(x, y, 10, 10);
     }
     else {
-      noStroke();
-      fill(0,0,0);
+      
+      fill(255);
       rect(x, y, 10, 10);
     }
 
