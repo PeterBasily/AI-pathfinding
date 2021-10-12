@@ -47,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.3) {
+        if (rand <= 0.1) {
           current.blocked = true;
         }
         else {
@@ -307,6 +307,63 @@ function runSearch(){
   
     }
     else if(searchType === 'adaptive'){
+      if(iterations === 0){
+        current = start;
+        current.g = 0;
+      }
+      if(current.compareTo(finish)){
+        endSearch();
+      
+      }
+    
+      else if(current.blocked){
+        if(heap.getSize() ===0){
+          alert("Can't find route");
+          endSearch();
+        }
+        else 
+          current = heap.extractMin();
+      }
+      else{      
+        current.visited = true;
+        path = constructPath(current);
+        iterations++;
+        var neighbors = current.neighbors;
+        for(let i = 0; i < neighbors.length; i++){
+          if(!neighbors[i].visited){
+            var g = current.g + 1;
+            var h = neighbors[i].mDistance(finish)-g;
+            var f = h + g;
+            if(heap.has(neighbors[i]) && (neighbors[i].f > f || (neighbors[i].f === f && neighbors[i].g > g))){
+              heap.remove(neighbors[i]);
+              neighbors[i].f = f;
+              neighbors[i].g = g;
+              neighbors[i].h = h;
+              neighbors[i].parent = current;
+              heap.insert(neighbors[i]);
+              
+
+            }
+            else if(!heap.has(neighbors[i])){
+              neighbors[i].parent = current;
+              neighbors[i].g = g;
+              neighbors[i].h = h
+              neighbors[i].f = f;
+              heap.insert(neighbors[i]);
+            }
+            
+        }
+          
+      }    
+      if(heap.getSize() > 0){
+        current = heap.extractMin();
+      }
+      else{
+        alert("Can't find route");
+        endSearch();
+        
+      }
+      }
   
     }
     
