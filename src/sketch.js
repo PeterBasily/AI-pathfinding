@@ -47,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.1) {
+        if (rand <= 0.03) {
           current.blocked = true;
         }
         else {
@@ -186,27 +186,19 @@ function runSearch(){
       if(iterations === 0){
         current = start;
         current.g = 0;
-      }
+        }
       if(current.compareTo(finish)){
         endSearch();
       
       }
     
-      else if(current.blocked){
-        if(heap.getSize() ===0){
-          alert("Can't find route");
-          endSearch();
-        }
-        else 
-          current = heap.extractMin();
-      }
       else{      
         current.visited = true;
         path = constructPath(current);
         iterations++;
         var neighbors = current.neighbors;
         for(let i = 0; i < neighbors.length; i++){
-          if(!neighbors[i].visited){
+          if(!neighbors[i].visited && !neighbors[i].blocked){
             var g = current.g + 1;
             var h = neighbors[i].mDistance(finish);
             var f = h + g;
@@ -256,21 +248,13 @@ function runSearch(){
       
       }
     
-      else if(current.blocked){
-        if(heap.getSize() ===0){
-          alert("Can't find route");
-          endSearch();
-        }
-        else 
-          current = heap.extractMin();
-      }
       else{      
         current.visited = true;
         path = constructPath(current);
         iterations++;
         var neighbors = current.neighbors;
         for(let i = 0; i < neighbors.length; i++){
-          if(!neighbors[i].visited){
+          if(!neighbors[i].visited && !neighbors[i].blocked){
             var g = current.g + 1;
             var h = neighbors[i].mDistance(start);
             var f = h + g;
@@ -316,25 +300,18 @@ function runSearch(){
       
       }
     
-      else if(current.blocked){
-        if(heap.getSize() ===0){
-          alert("Can't find route");
-          endSearch();
-        }
-        else 
-          current = heap.extractMin();
-      }
+      
       else{      
         current.visited = true;
         path = constructPath(current);
         iterations++;
         var neighbors = current.neighbors;
         for(let i = 0; i < neighbors.length; i++){
-          if(!neighbors[i].visited){
+          if(!neighbors[i].visited && !neighbors[i].blocked){
             var g = current.g + 1;
-            var h = neighbors[i].mDistance(finish)-g;
+            var h = neighbors[i].mDistance(finish) - g;
             var f = h + g;
-            if(heap.has(neighbors[i]) && (neighbors[i].f > f || (neighbors[i].f === f && neighbors[i].g > g))){
+            if(heap.has(neighbors[i]) && (neighbors[i].f > f)){
               heap.remove(neighbors[i]);
               neighbors[i].f = f;
               neighbors[i].g = g;
@@ -385,6 +362,8 @@ function compareCells(cell1, cell2){
   }
 }
 
+
+
 /****************SETUP & DRAW FUNCTIONS **********************/
 
 function setup() {
@@ -429,9 +408,6 @@ function draw() {
     finish.highLight('orange');
   }
   document.getElementById('counter').innerHTML = '<h2>cells visited: ' + iterations + ' | path length: ' +path.length + '</h2>';
-
-
-  
 
 
 
