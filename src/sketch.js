@@ -47,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.2) {
+        if (rand <= 0.3) {
           current.blocked = true;
         }
         else {
@@ -101,6 +101,7 @@ function resetCells(){
     grid[i].h = Infinity;
     grid[i].g = Infinity;
     grid[i].visited = false;
+    grid[i].parent = undefined;
   }
   path = [];
   iterations = 0;
@@ -120,6 +121,7 @@ function run() {
 
 
 function setStartAndFinish() {
+  resetCells();
   var r = floor(random(0, grid.length))
   var r2 = floor(random(0, grid.length))
   start = grid[r];
@@ -170,7 +172,7 @@ function endSearch(){
   document.getElementById('reset').disabled = false;
   document.getElementById('setStart').disabled = false;
   document.getElementById('MazeSelect').disabled = false;
-  current = start;
+  
   heap = new MinHeap(compareCells);
 }
 
@@ -235,6 +237,7 @@ function runSearch(){
       else{
         alert("Can't find route");
         endSearch();
+        
       }
       }
       
@@ -244,6 +247,63 @@ function runSearch(){
     
     
     else if(searchType === 'backward'){
+      if(iterations === 0){
+        current = finish;
+        current.g = 0;
+      }
+      if(current.compareTo(start)){
+        endSearch();
+      
+      }
+    
+      else if(current.blocked){
+        if(heap.getSize() ===0){
+          alert("Can't find route");
+          endSearch();
+        }
+        else 
+          current = heap.extractMin();
+      }
+      else{      
+        current.visited = true;
+        path = constructPath(current);
+        iterations++;
+        var neighbors = current.neighbors;
+        for(let i = 0; i < neighbors.length; i++){
+          if(!neighbors[i].visited){
+            var g = current.g + 1;
+            var h = neighbors[i].mDistance(start);
+            var f = h + g;
+            if(heap.has(neighbors[i]) && (neighbors[i].f > f || (neighbors[i].f === f && neighbors[i].g > g))){
+              heap.remove(neighbors[i]);
+              neighbors[i].f = f;
+              neighbors[i].g = g;
+              neighbors[i].h = h;
+              neighbors[i].parent = current;
+              heap.insert(neighbors[i]);
+              
+
+            }
+            else if(!heap.has(neighbors[i])){
+              neighbors[i].parent = current;
+              neighbors[i].g = g;
+              neighbors[i].h = h
+              neighbors[i].f = f;
+              heap.insert(neighbors[i]);
+            }
+            
+        }
+          
+      }    
+      if(heap.getSize() > 0){
+        current = heap.extractMin();
+      }
+      else{
+        alert("Can't find route");
+        endSearch();
+      }
+      }
+      
   
     }
     else if(searchType === 'adaptive'){
@@ -258,7 +318,7 @@ function runSearch(){
 }
 function compareCells(cell1, cell2){
   if(cell1.f === cell2.f){
-    if(cell1.g < cell2.g){
+    if(cell1.g > cell2.g){
       return -1;
     }
     return 0;
@@ -298,6 +358,7 @@ function draw() {
   
   for(let i = 0; i < path.length; i++){
       path[i].highLight('blue')
+      
   }
   if(heap){
     for(let i = 0; i < heap.items.length; i++){
@@ -310,7 +371,7 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
-  document.getElementById('counter').innerHTML = '<h2>cells visited: ' + iterations + '</h2>';
+  document.getElementById('counter').innerHTML = '<h2>cells visited: ' + iterations + ' | path length: ' +path.length + '</h2>';
 
 
   
