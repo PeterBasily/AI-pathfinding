@@ -47,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.03) {
+        if (rand <= 0.2) {
           current.blocked = true;
         }
         else {
