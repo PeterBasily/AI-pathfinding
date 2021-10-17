@@ -13,10 +13,6 @@ var dropdown;
 var current;
 var iterations = 0; //counts the number iterations (cells visited)
 var path = []
-var closedList = new Set();
-var visitedList = [];
-var pathLength = 0;
-var fstart; //used as temp pointer for start
 /*Utility functions */ 
 
 function init() {
@@ -37,7 +33,7 @@ function init() {
   }
   for (i = 0; i < 50; i++) {
     var visitedCells = [];
-    grid = allGrids[i]; 
+    grid = allGrids[i];
     var r = floor(random(0, grid.length))
     var current = grid[r];
     current.visited = true;
@@ -51,7 +47,7 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.3) {
+        if (rand <= 0.2) {
           current.blocked = true;
         }
         else {
@@ -164,6 +160,9 @@ function constructPath(cell){
 }
 function endSearch(){
   searching = false;
+  for(let i = 0; i < path.length; i++){
+    
+  }
   var elements = document.getElementsByTagName('input');
   for(i = 0; i < elements.length; i++){
     elements[i].disabled = false;
@@ -175,41 +174,6 @@ function endSearch(){
   document.getElementById('MazeSelect').disabled = false;
   
   heap = new MinHeap(compareCells);
-  current = undefined;
-  closedList = new Set()
-}
-
-function computePath(goal, heap){
- 
-  while(heap.peek() && goal.g > heap.peek().f){
-    current = heap.extractMin();
-       
-    var neighbors = current.neighbors;
-    for(let i = 0; i < neighbors.length; i++){
-      if(current.g === 0){
-        if(neighbors[i].blocked){
-          closedList.add(neighbors[i])
-        }
-        
-      }
-      if(neighbors[i].search < iterations){
-        neighbors[i].g = Infinity;
-        neighbors[i].search = iterations;
-      }
-      if(neighbors[i].g > current.g+1){        
-        neighbors[i].g = current.g+1;
-        neighbors[i].parent = current;
-        if(heap.has(neighbors[i])){
-          heap.remove(neighbors[i]);
-        }
-        neighbors[i].h = neighbors[i].mDistance(goal);
-        neighbors[i].f = neighbors[i].g + neighbors[i].h;
-        if(!closedList.has(neighbors[i]))
-          heap.insert(neighbors[i])
-      }
-    }
-
-  }
 }
 
 function runSearch(){
@@ -219,153 +183,111 @@ function runSearch(){
   }
   else{
     if(searchType === 'forward'){
-      
       if(iterations === 0){
-        for(let i = 0; i < grid.length; i++){
-          grid[i].search = 0;
-          fstart = start;
+        current = start;
+        current.g = 0;
         }
-        pathLength = 0;
-        path = [];
-        visitedList = [];
-
-                
+      if(current.compareTo(finish)){
+        endSearch();
+      
       }
-      if(fstart != finish){
-        var myheap = new MinHeap(compareCells)
+    
+      else{      
+        current.visited = true;
+        path = constructPath(current);
         iterations++;
-        fstart.g = 0;
-        fstart.h = fstart.mDistance(finish);
-        fstart.f = fstart.g + fstart.h;
-        fstart.search = iterations;
-        finish.g = Infinity;
-        finish.search = iterations;
-        myheap.insert(fstart);
-        computePath(finish, myheap);
-        
-        
-        
-        if(myheap.isEmpty()){
-          alert('I cannot reach the target')
-          endSearch();
-          return;
-        }
-        path = constructPath(finish);
-        
-        for(let i = 0; i < visitedList.length; i++){
-          visitedList[i].highLight('green')
-          
-        }     
-        while(path.length > 0 && !path[path.length-1].blocked){
-          pathLength++;
-          temp = fstart;      
-          fstart = path.pop();
-          var ns = fstart.neighbors;
-          for(let i = 0; i < ns.length; i++){
-            if(ns[i].blocked){
-              closedList.add(ns[i]);
-            }
-          }
-          visitedList.push(temp);
-          
-          fstart.highLight('red')
-          fstart.g = temp.g+1;
-          fstart.f = fstart.g + fstart.h;
-          temp.parent = undefined;
-          fstart.parent = undefined;
-          
-          
-          
+        var neighbors = current.neighbors;
+        for(let i = 0; i < neighbors.length; i++){
+          if(!neighbors[i].visited && !neighbors[i].blocked){
+            var g = current.g + 1;
+            var h = neighbors[i].mDistance(finish);
+            var f = h + g;
+            if(heap.has(neighbors[i]) && (neighbors[i].f > f || (neighbors[i].f === f && neighbors[i].g > g))){
+              heap.remove(neighbors[i]);
+              neighbors[i].f = f;
+              neighbors[i].g = g;
+              neighbors[i].h = h;
+              neighbors[i].parent = current;
+              heap.insert(neighbors[i]);
+              
 
-        
+            }
+            else if(!heap.has(neighbors[i])){
+              neighbors[i].parent = current;
+              neighbors[i].g = g;
+              neighbors[i].h = h
+              neighbors[i].f = f;
+              heap.insert(neighbors[i]);
+            }
+            
         }
-        closedList.add(path[path.length-1])
-             
-        
-        
-        
-        
+          
+      }    
+      if(heap.getSize() > 0){
+        current = heap.extractMin();
       }
       else{
-        endSearch()
+        alert("Can't find route");
+        endSearch();
         
       }
+      }
       
-  }
+       
+  
+    }
+    
     
     else if(searchType === 'backward'){
-       
-       
       if(iterations === 0){
-        for(let i = 0; i < grid.length; i++){
-          grid[i].search = 0;
-          fstart = finish;
-        }
-        pathLength = 0;
-        path = [];
-        visitedList = [];
-
-                
+        current = finish;
+        current.g = 0;
       }
-      if(fstart != start){
-        var myheap = new MinHeap(compareCells)
+      if(current.compareTo(start)){
+        endSearch();
+      
+      }
+    
+      else{      
+        current.visited = true;
+        path = constructPath(current);
         iterations++;
-        fstart.g = 0;
-        fstart.h = fstart.mDistance(start);
-        fstart.f = fstart.g + fstart.h;
-        fstart.search = iterations;
-        start.g = Infinity;
-        start.search = iterations;
-        myheap.insert(fstart);
-        computePath(start, myheap);
-        
-        
-        
-        if(myheap.isEmpty()){
-          alert('I cannot reach the target')
-          endSearch();
-          return;
-        }
-        path = constructPath(start);
-        
-        for(let i = 0; i < visitedList.length; i++){
-          visitedList[i].highLight('green')
-          
-        }     
-        while(path.length > 0 && !path[path.length-1].blocked){
-          pathLength++;
-          temp = fstart;      
-          fstart = path.pop();
-          var ns = fstart.neighbors;
-          for(let i = 0; i < ns.length; i++){
-            if(ns[i].blocked){
-              closedList.add(ns[i]);
-            }
-          }
-          visitedList.push(temp);
-          
-          fstart.highLight('red')
-          fstart.g = temp.g+1;
-          fstart.f = fstart.g + fstart.h;
-          temp.parent = undefined;
-          fstart.parent = undefined;
-          
-          
-          
+        var neighbors = current.neighbors;
+        for(let i = 0; i < neighbors.length; i++){
+          if(!neighbors[i].visited && !neighbors[i].blocked){
+            var g = current.g + 1;
+            var h = neighbors[i].mDistance(start);
+            var f = h + g;
+            if(heap.has(neighbors[i]) && (neighbors[i].f > f || (neighbors[i].f === f && neighbors[i].g > g))){
+              heap.remove(neighbors[i]);
+              neighbors[i].f = f;
+              neighbors[i].g = g;
+              neighbors[i].h = h;
+              neighbors[i].parent = current;
+              heap.insert(neighbors[i]);
+              
 
-        
+            }
+            else if(!heap.has(neighbors[i])){
+              neighbors[i].parent = current;
+              neighbors[i].g = g;
+              neighbors[i].h = h
+              neighbors[i].f = f;
+              heap.insert(neighbors[i]);
+            }
+            
         }
-        closedList.add(path[path.length-1])
-             
-        
-        
-        
-        
+          
+      }    
+      if(heap.getSize() > 0){
+        current = heap.extractMin();
       }
       else{
-        endSearch()
-        
+        alert("Can't find route");
+        endSearch();
       }
+      }
+      
   
     }
     else if(searchType === 'adaptive'){
@@ -474,10 +396,6 @@ function draw() {
       path[i].highLight('blue')
       
   }
- 
-  if(current){
-    current.highLight('yellow')
-  }
   if(heap){
     for(let i = 0; i < heap.items.length; i++){
       heap.items[i].highLight('green')
@@ -489,7 +407,7 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
-  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + '</h2>';
+  document.getElementById('counter').innerHTML = '<h2>cells visited: ' + iterations + ' | path length: ' +path.length + '</h2>';
 
 
 

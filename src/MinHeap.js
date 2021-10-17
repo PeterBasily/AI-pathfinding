@@ -33,6 +33,10 @@ class MinHeap{
 
         }
     }
+
+    peek = function(){
+        return this.items[0];
+    }
      
 
     remove = (cell) =>{
