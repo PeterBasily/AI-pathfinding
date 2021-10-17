@@ -180,25 +180,19 @@ function endSearch(){
 }
 
 function computePath(goal, heap){
- 
+  var cur; 
   while(heap.peek() && goal.g > heap.peek().f){
-    current = heap.extractMin();
+    cur = heap.extractMin();
        
-    var neighbors = current.neighbors;
+    var neighbors = cur.neighbors;
     for(let i = 0; i < neighbors.length; i++){
-      if(current.g === 0){
-        if(neighbors[i].blocked){
-          closedList.add(neighbors[i])
-        }
-        
-      }
       if(neighbors[i].search < iterations){
         neighbors[i].g = Infinity;
         neighbors[i].search = iterations;
       }
-      if(neighbors[i].g > current.g+1){        
-        neighbors[i].g = current.g+1;
-        neighbors[i].parent = current;
+      if(neighbors[i].g > cur.g+1){        
+        neighbors[i].g = cur.g+1;
+        neighbors[i].parent = cur;
         if(heap.has(neighbors[i])){
           heap.remove(neighbors[i]);
         }
@@ -252,20 +246,18 @@ function runSearch(){
         }
         path = constructPath(finish);
         
-        for(let i = 0; i < visitedList.length; i++){
-          visitedList[i].highLight('green')
-          
-        }     
+            
         while(path.length > 0 && !path[path.length-1].blocked){
           pathLength++;
-          temp = fstart;      
-          fstart = path.pop();
-          var ns = fstart.neighbors;
+          temp = fstart;
+          var ns = temp.neighbors;
           for(let i = 0; i < ns.length; i++){
             if(ns[i].blocked){
               closedList.add(ns[i]);
             }
           }
+
+          fstart = path.pop();          
           visitedList.push(temp);
           
           fstart.highLight('red')
@@ -328,10 +320,7 @@ function runSearch(){
         }
         path = constructPath(start);
         
-        for(let i = 0; i < visitedList.length; i++){
-          visitedList[i].highLight('green')
-          
-        }     
+            
         while(path.length > 0 && !path[path.length-1].blocked){
           pathLength++;
           temp = fstart;      
@@ -468,6 +457,10 @@ function draw() {
 
   
   run();
+  for(let i = 0; i < visitedList.length; i++){
+    visitedList[i].highLight('green')
+    
+  } 
   runSearch();
   
   for(let i = 0; i < path.length; i++){
@@ -477,6 +470,9 @@ function draw() {
  
   if(current){
     current.highLight('yellow')
+  }
+  if(fstart){
+    fstart.highLight('yellow')
   }
   if(heap){
     for(let i = 0; i < heap.items.length; i++){
