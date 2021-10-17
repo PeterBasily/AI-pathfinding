@@ -4,16 +4,14 @@ class Cell{
   
   constructor(i, j)
   { 
-    this.blocked;
-    this.visited;
+    this.blocked = false;
+    this.visited = false;
     this.h;
     this.f = Infinity;
     this.g;
     this.neighbors = [];
     this.i = i;
     this.j = j;
-    this.blocked = true;
-    this.visited = false;
     this.tree;
     this.search;
     this.parent = undefined;

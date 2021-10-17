@@ -10,16 +10,18 @@ var searchType; //the search type
 var searching = false; //bool used to start search
 var heap; //The binary heap we are using to store our open list
 var dropdown;
-var current;
+
 var iterations = 0; //counts the number iterations (cells visited)
 var path = []
 var closedList = new Set();
 var visitedList = [];
 var pathLength = 0;
 var fstart; //used as temp pointer for start
+var fin;
 /*Utility functions */ 
 
 function init() {
+  var current;
   heap = new MinHeap(compareCells);
   reset = true;
   for (let k = 0; k < 50; k++) {
@@ -51,11 +53,8 @@ function init() {
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.3) {
+        if (rand <= 0.4) {
           current.blocked = true;
-        }
-        else {
-          current.blocked = false;
         }
         current = next;
 
@@ -176,6 +175,8 @@ function endSearch(){
   
   heap = new MinHeap(compareCells);
   current = undefined;
+  fstart = undefined;
+  fin = undefined;
   closedList = new Set()
 }
 
@@ -197,6 +198,14 @@ function computePath(goal, heap){
           heap.remove(neighbors[i]);
         }
         neighbors[i].h = neighbors[i].mDistance(goal);
+        if(searchType === 'adaptive'){
+          for(let j = 0; j < visitedList.length; j++){
+            if(visitedList[j].compareTo(neighbors[i]) === true)
+              neighbors[i].h = neighbors[i].mDistance(finish) - neighbors[i].g;
+
+        }
+        
+      }
         neighbors[i].f = neighbors[i].g + neighbors[i].h;
         if(!closedList.has(neighbors[i]))
           heap.insert(neighbors[i])
@@ -292,6 +301,7 @@ function runSearch(){
         for(let i = 0; i < grid.length; i++){
           grid[i].search = 0;
           fstart = finish;
+          fin = start;
         }
         pathLength = 0;
         path = [];
@@ -299,17 +309,17 @@ function runSearch(){
 
                 
       }
-      if(fstart != start){
+      if(fin != finish){
         var myheap = new MinHeap(compareCells)
         iterations++;
         fstart.g = 0;
-        fstart.h = fstart.mDistance(start);
+        fstart.h = fstart.mDistance(fin);
         fstart.f = fstart.g + fstart.h;
         fstart.search = iterations;
-        start.g = Infinity;
-        start.search = iterations;
+        fin.g = Infinity;
+        fin.search = iterations;
         myheap.insert(fstart);
-        computePath(start, myheap);
+        computePath(fin, myheap);
         
         
         
@@ -318,19 +328,91 @@ function runSearch(){
           endSearch();
           return;
         }
-        path = constructPath(start);
+        path = constructPath(fin);
+        
+            
+        while(path.length > 0 && !path[0].blocked){
+          pathLength++;
+          temp = fin; 
+          var ns = fin.neighbors;
+          for(let i = 0; i < ns.length; i++){
+            if(ns[i].blocked){
+              closedList.add(ns[i]);
+            }     
+          }
+         
+          fin = path.shift();
+          visitedList.push(temp);
+          
+          fin.highLight('red')
+          fin.g = temp.g+1;
+          fin.f = fin.g + fin.h;
+          temp.parent = undefined;
+          
+          
+          
+          
+
+        
+        }
+        closedList.add(path[path.length-1])
+             
+        
+        
+        
+        
+      }
+      else{
+        endSearch()
+        
+      }
+  
+    }
+    else if(searchType === 'adaptive'){
+      if(iterations === 0){
+        for(let i = 0; i < grid.length; i++){
+          grid[i].search = 0;
+          fstart = start;
+        }
+        pathLength = 0;
+        path = [];
+        visitedList = [];
+
+                
+      }
+      if(fstart != finish){
+        var myheap = new MinHeap(compareCells)
+        iterations++;
+        fstart.h = fstart.mDistance(finish);
+        fstart.g = 0;
+        fstart.f = fstart.g + fstart.h;
+        fstart.search = iterations;
+        finish.g = Infinity;
+        finish.search = iterations;
+        myheap.insert(fstart);
+        computePath(finish, myheap);
+        
+        
+        
+        if(myheap.isEmpty()){
+          alert('I cannot reach the target')
+          endSearch();
+          return;
+        }
+        path = constructPath(finish);
         
             
         while(path.length > 0 && !path[path.length-1].blocked){
           pathLength++;
-          temp = fstart;      
-          fstart = path.pop();
-          var ns = fstart.neighbors;
+          temp = fstart;
+          var ns = temp.neighbors;
           for(let i = 0; i < ns.length; i++){
             if(ns[i].blocked){
               closedList.add(ns[i]);
             }
           }
+
+          fstart = path.pop();          
           visitedList.push(temp);
           
           fstart.highLight('red')
@@ -355,62 +437,7 @@ function runSearch(){
         endSearch()
         
       }
-  
     }
-    else if(searchType === 'adaptive'){
-      if(iterations === 0){
-        current = start;
-        current.g = 0;
-      }
-      if(current.compareTo(finish)){
-        endSearch();
-      
-      }
-    
-      
-      else{      
-        current.visited = true;
-        path = constructPath(current);
-        iterations++;
-        var neighbors = current.neighbors;
-        for(let i = 0; i < neighbors.length; i++){
-          if(!neighbors[i].visited && !neighbors[i].blocked){
-            var g = current.g + 1;
-            var h = neighbors[i].mDistance(finish) - g;
-            var f = h + g;
-            if(heap.has(neighbors[i]) && (neighbors[i].f > f)){
-              heap.remove(neighbors[i]);
-              neighbors[i].f = f;
-              neighbors[i].g = g;
-              neighbors[i].h = h;
-              neighbors[i].parent = current;
-              heap.insert(neighbors[i]);
-              
-
-            }
-            else if(!heap.has(neighbors[i])){
-              neighbors[i].parent = current;
-              neighbors[i].g = g;
-              neighbors[i].h = h
-              neighbors[i].f = f;
-              heap.insert(neighbors[i]);
-            }
-            
-        }
-          
-      }    
-      if(heap.getSize() > 0){
-        current = heap.extractMin();
-      }
-      else{
-        alert("Can't find route");
-        endSearch();
-        
-      }
-      }
-  
-    }
-    
 
   }
   
@@ -468,12 +495,13 @@ function draw() {
       
   }
  
-  if(current){
-    current.highLight('yellow')
+  if(fin){
+    fin.highLight('yellow')
   }
   if(fstart){
     fstart.highLight('yellow')
   }
+
   if(heap){
     for(let i = 0; i < heap.items.length; i++){
       heap.items[i].highLight('green')
