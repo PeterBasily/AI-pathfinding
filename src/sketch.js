@@ -1,16 +1,18 @@
+/*Author: Peter Basily*
+ *Date: 10/17/2021
+ */
+
 /*variables*/
 
 var allGrids = []; //all 50 grids generated
 var grid; //The current grid selected
 var canvas; //our canvas
-var reset; //bool used to reset all grids 
 var start; //the starting node
 var finish; //the finishing node
 var searchType; //the search type
 var searching = false; //bool used to start search
 var heap; //The binary heap we are using to store our open list
 var dropdown;
-
 var iterations = 0; //counts the number iterations (cells visited)
 var path = []
 var closedList = new Set();
@@ -20,10 +22,13 @@ var fstart; //used as temp pointer for start
 var fin;
 /*Utility functions */ 
 
+/*
+  The init() function generates 50 grids of 101x101 cells and uses DFS on every grid to generate mazes.
+*/
 function init() {
-  var current;
+  var current; 
   heap = new MinHeap(compareCells);
-  reset = true;
+  /*---- begin creation of 50 mazes ----*/
   for (let k = 0; k < 50; k++) {
     allGrids[k] = [];
     for (let j = 0; j < 101; j++) {
@@ -32,11 +37,13 @@ function init() {
         allGrids[k].push(cell);
       }
     }
+    /*--- Creates neighbors for every cell in the grid --*/
     for(let i = 0; i < allGrids[k].length; i++){
       allGrids[k][i].makeNeighbors(allGrids[k]);
     }
 
   }
+  /*--- Begin DFS from random spot on the grid ---*/
   for (i = 0; i < 50; i++) {
     var visitedCells = [];
     grid = allGrids[i]; 
@@ -47,13 +54,13 @@ function init() {
     
     while (visitedCells.length > 0) {
       current.visited = true;
-      var next = current.checkNeighbors();
+      var next = current.checkNeighbors(); //checkNeighbors() returns a random neighbor
       if (next) {
         next.visited = true;
         visitedCells.push(current);
 
         let rand = Math.random();
-        if (rand <= 0.4) {
+        if (rand <= 0.3) {
           current.blocked = true;
         }
         current = next;
@@ -72,6 +79,7 @@ function init() {
   }
   
 }
+/*----SelectSearch() function disables buttons, selects the search type, and sets searching = true for the runSearch function */
 
 function selectSearch(){
   if(start == undefined || finish == undefined){
@@ -98,6 +106,7 @@ function selectSearch(){
   
   
 }
+/*--resets all the cells on the current grid to a neutral state --*/
 function resetCells(){
   for(let i = 0; i < grid.length;i++){
     grid[i].f = Infinity;
@@ -110,7 +119,7 @@ function resetCells(){
   iterations = 0;
 
 }
-
+/*--automatically positions the grid in center screen and shows each cell on the current grid --*/
 function run() {
   canvas.position((windowWidth - 1010) / 2, 100);
 
@@ -122,7 +131,7 @@ function run() {
 
 }
 
-
+/*-- Selects 2 random open cells on the current grid --*/
 function setStartAndFinish() {
   resetCells();
   var r = floor(random(0, grid.length))
@@ -144,13 +153,14 @@ function setStartAndFinish() {
 
 
 }
+/*-- Changes the current grid to the selected one from the dropdown --*/
 function setGrid(value) {
   grid = allGrids[value];
   start = undefined;
   finish = undefined;
   resetCells();
 }
-
+/*-- Constructs a path by following parent pointers and returns it--*/
 function constructPath(cell){
   let path = [cell];
   let temp = cell;
@@ -161,6 +171,7 @@ function constructPath(cell){
   }
   return path;
 }
+/*-- Re-enables the buttons and cleans some data after a search is done --*/
 function endSearch(){
   searching = false;
   var elements = document.getElementsByTagName('input');
@@ -180,6 +191,7 @@ function endSearch(){
   closedList = new Set()
 }
 
+/*-- Computes the shortest path (A* search) --*/
 function computePath(goal, heap){
   var cur; 
   while(heap.peek() && goal.g > heap.peek().f){
@@ -198,7 +210,8 @@ function computePath(goal, heap){
           heap.remove(neighbors[i]);
         }
         neighbors[i].h = neighbors[i].mDistance(goal);
-        if(searchType === 'adaptive'){
+        //if it's adaptive, check the closed list to see if the current neighbor exists in it, then change the heuristic
+        if(searchType === 'adaptive'){ 
           for(let j = 0; j < visitedList.length; j++){
             if(visitedList[j].compareTo(neighbors[i]) === true)
               neighbors[i].h = neighbors[i].mDistance(finish) - neighbors[i].g;
@@ -206,8 +219,9 @@ function computePath(goal, heap){
         }
         
       }
-        neighbors[i].f = neighbors[i].g + neighbors[i].h;
-        if(!closedList.has(neighbors[i]))
+      //closedList() houses all the cells we discovered were blocked during our search
+      neighbors[i].f = neighbors[i].g + neighbors[i].h;
+      if(!closedList.has(neighbors[i]))
           heap.insert(neighbors[i])
       }
     }
@@ -215,12 +229,14 @@ function computePath(goal, heap){
   }
 }
 
+/*-- Runs the selected radio button search --*/
 function runSearch(){
   
   if(!searching){
     return;
   }
   else{
+    //*-- FORWARD A* create a path from the starting node --*/
     if(searchType === 'forward'){
       
       if(iterations === 0){
@@ -293,7 +309,7 @@ function runSearch(){
       }
       
   }
-    
+    /* Backwards A* create a path from the goal node */
     else if(searchType === 'backward'){
        
        
@@ -368,6 +384,7 @@ function runSearch(){
       }
   
     }
+    /*-- Adaptive A* uses the new heuristic (check compute path) --*/
     else if(searchType === 'adaptive'){
       if(iterations === 0){
         for(let i = 0; i < grid.length; i++){
@@ -420,7 +437,7 @@ function runSearch(){
           fstart.f = fstart.g + fstart.h;
           temp.parent = undefined;
           fstart.parent = undefined;
-          
+         
           
           
 
@@ -444,6 +461,7 @@ function runSearch(){
   
 
 }
+/*This is the tie-breaking function fed into our min-heap */
 function compareCells(cell1, cell2){
   if(cell1.f === cell2.f){
     if(cell1.g > cell2.g){
@@ -513,7 +531,7 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
-  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + '</h2>';
+  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + ' | A* search path: ' + path.length +  '</h2>';
 
 
 
