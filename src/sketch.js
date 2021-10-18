@@ -479,7 +479,7 @@ function compareCells(cell1, cell2){
 /****************SETUP & DRAW FUNCTIONS **********************/
 
 function setup() {
-  frameRate(1)
+  frameRate(60)
   canvas = createCanvas(1010, 1010, P2D);
   canvas.parent('canvas_parent');
   canvas.elt.style.position = 'fixed';
