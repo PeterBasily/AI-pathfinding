@@ -428,7 +428,6 @@ function runSearch(){
               closedList.add(ns[i]);
             }
           }
-          console.log(temp, fstart, path[0], finish.g)
           fstart = path.pop();          
           visitedList.push(temp);
           
