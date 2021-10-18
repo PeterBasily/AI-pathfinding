@@ -1,4 +1,4 @@
-/*Author: Peter Basily
+/*Authors: Peter Basily, Phil Sevirov, Duncan Wood
  *Date: 10/17/2021
  *Implementation of min-heap
  */

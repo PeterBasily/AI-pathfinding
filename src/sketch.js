@@ -1,4 +1,4 @@
-/*Author: Peter Basily*
+/*Authors: Peter Basily, Phil Sevirov, Duncan Wood*
  *Date: 10/17/2021
  */
 
@@ -479,7 +479,7 @@ function compareCells(cell1, cell2){
 /****************SETUP & DRAW FUNCTIONS **********************/
 
 function setup() {
-  frameRate(60)
+  frameRate(1)
   canvas = createCanvas(1010, 1010, P2D);
   canvas.parent('canvas_parent');
   canvas.elt.style.position = 'fixed';
