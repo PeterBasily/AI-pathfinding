@@ -213,16 +213,17 @@ function computePath(goal, heap){
         //if it's adaptive, check the closed list to see if the current neighbor exists in it, then change the heuristic
         if(searchType === 'adaptive'){ 
           for(let j = 0; j < visitedList.length; j++){
-            if(visitedList[j].compareTo(neighbors[i]) === true)
-              neighbors[i].h = neighbors[i].mDistance(finish) - neighbors[i].g;
-
+            if(visitedList[j].compareTo(neighbors[i]) === true && !visitedList[j].blocked)
+              neighbors[i].h = path.length - visitedList.length; /*the path length is the expected g value for the goal
+                                                                  *the visitedList length is how long the path is from current state from start*/
+          }             
         }
-        
-      }
       //closedList() houses all the cells we discovered were blocked during our search
-      neighbors[i].f = neighbors[i].g + neighbors[i].h;
-      if(!closedList.has(neighbors[i]))
-          heap.insert(neighbors[i])
+      if(!closedList.has(neighbors[i])){
+        neighbors[i].f = neighbors[i].g + neighbors[i].h;
+        heap.insert(neighbors[i])
+      }
+        
       }
     }
 
@@ -296,7 +297,6 @@ function runSearch(){
 
         
         }
-        closedList.add(path[path.length-1])
              
         
         
@@ -371,8 +371,7 @@ function runSearch(){
 
         
         }
-        closedList.add(path[path.length-1])
-             
+        
         
         
         
@@ -390,6 +389,7 @@ function runSearch(){
         for(let i = 0; i < grid.length; i++){
           grid[i].search = 0;
           fstart = start;
+          closedList = new Set();
         }
         pathLength = 0;
         path = [];
@@ -428,7 +428,7 @@ function runSearch(){
               closedList.add(ns[i]);
             }
           }
-
+          console.log(temp, fstart, path[0], finish.g)
           fstart = path.pop();          
           visitedList.push(temp);
           
@@ -443,7 +443,7 @@ function runSearch(){
 
         
         }
-        closedList.add(path[path.length-1])
+        
              
         
         
