@@ -199,9 +199,10 @@ function computePath(goal, heap){
   while(heap.peek() && goal.g > heap.peek().f){
     cur = heap.extractMin();
     expanded++;
+    cur.highLight('pink')
     var neighbors = cur.neighbors;
     for(let i = 0; i < neighbors.length; i++){
-      neighbors[i].highLight('pink')
+      
       if(neighbors[i].search < iterations){
         neighbors[i].g = Infinity;
         neighbors[i].search = iterations;
@@ -225,6 +226,7 @@ function computePath(goal, heap){
       if(!closedList.has(neighbors[i])){
         neighbors[i].f = neighbors[i].g + neighbors[i].h;
         heap.insert(neighbors[i])
+        neighbors[i].highLight('pink')
       }
         
       }
