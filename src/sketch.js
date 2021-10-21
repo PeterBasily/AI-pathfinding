@@ -20,6 +20,7 @@ var visitedList = [];
 var pathLength = 0;
 var fstart; //used as temp pointer for start
 var fin;
+var expandedCells = 0;
 /*Utility functions */ 
 
 /*
@@ -194,9 +195,10 @@ function endSearch(){
 /*-- Computes the shortest path (A* search) --*/
 function computePath(goal, heap){
   var cur; 
+  var expanded = 0;
   while(heap.peek() && goal.g > heap.peek().f){
     cur = heap.extractMin();
-       
+    expanded++;
     var neighbors = cur.neighbors;
     for(let i = 0; i < neighbors.length; i++){
       if(neighbors[i].search < iterations){
@@ -228,6 +230,7 @@ function computePath(goal, heap){
     }
 
   }
+  return expanded;
 }
 
 /*-- Runs the selected radio button search --*/
@@ -261,7 +264,7 @@ function runSearch(){
         finish.g = Infinity;
         finish.search = iterations;
         myheap.insert(fstart);
-        computePath(finish, myheap);
+        expandedCells = computePath(finish, myheap);
         
         
         
@@ -335,7 +338,7 @@ function runSearch(){
         fin.g = Infinity;
         fin.search = iterations;
         myheap.insert(fstart);
-        computePath(fin, myheap);
+        expandedCells = computePath(fin, myheap);
         
         
         
@@ -407,7 +410,7 @@ function runSearch(){
         finish.g = Infinity;
         finish.search = iterations;
         myheap.insert(fstart);
-        computePath(finish, myheap);
+        expandedCells = computePath(finish, myheap);
         
         
         
@@ -530,7 +533,7 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
-  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + ' | A* search path: ' + path.length +  '</h2>';
+  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + ' | A* search path: ' + path.length +  '| expanded cells in last call: ' + expandedCells + '</h2>';
 
 
 
