@@ -539,7 +539,7 @@ function draw() {
   if (finish) {
     finish.highLight('orange');
   }
-  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + ' | A* search path: ' + path.length +  '| expanded cells in last call: ' + expandedCells + '</h2>';
+  document.getElementById('counter').innerHTML = '<h2> path length: ' + pathLength + ' | A* search path: ' + path.length +  '| total expanded cells: ' + expandedCells + '</h2>';
 
 
 
