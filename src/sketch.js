@@ -196,10 +196,12 @@ function endSearch(){
 function computePath(goal, heap){
   var cur; 
   var expanded = 0;
+  var value = 0;
   while(heap.peek() && goal.g > heap.peek().f){
     cur = heap.extractMin();
+    value++;
     expanded++;
-    cur.highLight('pink')
+    cur.highLight('rgba(' + value.toString() + ',255,0, 0.25)')
     var neighbors = cur.neighbors;
     for(let i = 0; i < neighbors.length; i++){
       
@@ -510,12 +512,14 @@ function draw() {
 
   
   run();
-  
-  runSearch();
+
   for(let i = 0; i < visitedList.length; i++){
     visitedList[i].highLight('green')
     
   } 
+  
+  runSearch();
+  
   for(let i = 0; i < path.length; i++){
       path[i].highLight('blue')
       
