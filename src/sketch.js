@@ -201,6 +201,7 @@ function computePath(goal, heap){
     expanded++;
     var neighbors = cur.neighbors;
     for(let i = 0; i < neighbors.length; i++){
+      neighbors[i].highLight('pink')
       if(neighbors[i].search < iterations){
         neighbors[i].g = Infinity;
         neighbors[i].search = iterations;
@@ -247,6 +248,7 @@ function runSearch(){
         for(let i = 0; i < grid.length; i++){
           grid[i].search = 0;
           fstart = start;
+          expandedCells = 0;
         }
         pathLength = 0;
         path = [];
@@ -264,7 +266,7 @@ function runSearch(){
         finish.g = Infinity;
         finish.search = iterations;
         myheap.insert(fstart);
-        expandedCells = computePath(finish, myheap);
+        expandedCells += computePath(finish, myheap);
         
         
         
@@ -321,6 +323,7 @@ function runSearch(){
           grid[i].search = 0;
           fstart = finish;
           fin = start;
+          expandedCells = 0;
         }
         pathLength = 0;
         path = [];
@@ -338,7 +341,7 @@ function runSearch(){
         fin.g = Infinity;
         fin.search = iterations;
         myheap.insert(fstart);
-        expandedCells = computePath(fin, myheap);
+        expandedCells += computePath(fin, myheap);
         
         
         
@@ -362,6 +365,7 @@ function runSearch(){
          
           fin = path.shift();
           visitedList.push(temp);
+
           
           fin.highLight('red')
           fin.g = temp.g+1;
@@ -393,6 +397,7 @@ function runSearch(){
           grid[i].search = 0;
           fstart = start;
           closedList = new Set();
+          expandedCells = 0;
         }
         pathLength = 0;
         path = [];
@@ -410,7 +415,7 @@ function runSearch(){
         finish.g = Infinity;
         finish.search = iterations;
         myheap.insert(fstart);
-        expandedCells = computePath(finish, myheap);
+        expandedCells += computePath(finish, myheap);
         
         
         
@@ -445,8 +450,7 @@ function runSearch(){
 
         
         }
-        
-             
+      
         
         
         
