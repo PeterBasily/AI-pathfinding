@@ -508,12 +508,12 @@ function draw() {
 
   
   run();
+  
+  runSearch();
   for(let i = 0; i < visitedList.length; i++){
     visitedList[i].highLight('green')
     
   } 
-  runSearch();
-  
   for(let i = 0; i < path.length; i++){
       path[i].highLight('blue')
       
