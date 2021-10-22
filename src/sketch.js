@@ -196,12 +196,18 @@ function endSearch(){
 function computePath(goal, heap){
   var cur; 
   var expanded = 0;
-  var value = 0;
+  var v1 = 0;
+  var v2 = 255;
   while(heap.peek() && goal.g > heap.peek().f){
     cur = heap.extractMin();
-    value++;
+    if(v1 < 255){
+      v1++;
+      v2 = 255-v1;
+
+    }
+    
     expanded++;
-    cur.highLight('rgba(' + value.toString() + ',255,0, 0.25)')
+    cur.highLight('rgba(' + v1.toString() + ','+v2.toString() + ',0, 0.25)')
     var neighbors = cur.neighbors;
     for(let i = 0; i < neighbors.length; i++){
       
