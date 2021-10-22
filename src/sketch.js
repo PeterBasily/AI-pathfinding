@@ -222,6 +222,7 @@ function computePath(goal, heap){
             if(visitedList[j].compareTo(neighbors[i]) === true && !visitedList[j].blocked)
               neighbors[i].h = path.length - visitedList.length; /*the path length is the expected g value for the goal
                                                                   *the visitedList length is how long the path is from current state from start*/
+              break;
           }             
         }
       //closedList() houses all the cells we discovered were blocked during our search
