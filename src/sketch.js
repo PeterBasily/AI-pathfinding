@@ -356,8 +356,9 @@ function runSearch(){
         }
         path = constructPath(fin);
         
+        path = path.reverse();
             
-        while(path.length > 0 && !path[0].blocked){
+        while(path.length > 0 && !path[path.length-1].blocked){
           pathLength++;
           temp = fin; 
           var ns = fin.neighbors;
@@ -367,7 +368,7 @@ function runSearch(){
             }     
           }
          
-          fin = path.shift();
+          fin = path.pop();
           visitedList.push(temp);
 
           
