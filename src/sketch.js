@@ -400,6 +400,78 @@ function runSearch(){
         endSearch()
         
       }
+      if(searchType === 'forward'){
+      
+        if(iterations === 0){
+          for(let i = 0; i < grid.length; i++){
+            grid[i].search = 0;
+            fstart = start;
+            expandedCells = 0;
+          }
+          pathLength = 0;
+          path = [];
+          visitedList = [];
+  
+                  
+        }
+        if(fstart != finish){
+          var myheap = new MinHeap(compareCells)
+          iterations++;
+          fstart.g = 0;
+          fstart.h = fstart.mDistance(finish);
+          fstart.f = fstart.g + fstart.h;
+          fstart.search = iterations;
+          finish.g = Infinity;
+          finish.search = iterations;
+          myheap.insert(fstart);
+          expandedCells += computePath(finish, myheap);
+          
+          
+          
+          if(myheap.isEmpty()){
+            alert('I cannot reach the target')
+            endSearch();
+            return;
+          }
+          path = constructPath(finish);
+          
+              
+          while(path.length > 0 && !path[path.length-1].blocked){
+            pathLength++;
+            temp = fstart;
+            var ns = temp.neighbors;
+            for(let i = 0; i < ns.length; i++){
+              if(ns[i].blocked){
+                closedList.add(ns[i]);
+              }
+            }
+  
+            fstart = path.pop();          
+            visitedList.push(temp);
+            
+            fstart.highLight('red')
+            fstart.g = temp.g+1;
+            fstart.f = fstart.g + fstart.h;
+            temp.parent = undefined;
+            fstart.parent = undefined;
+            
+            
+            
+  
+          
+          }
+               
+          
+          
+          
+          
+        }
+        else{
+          endSearch()
+          
+        }
+        
+    }
   
     }
     /*-- Adaptive A* uses the new heuristic (check compute path) --*/
@@ -475,7 +547,78 @@ function runSearch(){
     }
 
   }
-  
+  if(searchType === 'lessthang'){
+      
+    if(iterations === 0){
+      for(let i = 0; i < grid.length; i++){
+        grid[i].search = 0;
+        fstart = start;
+        expandedCells = 0;
+      }
+      pathLength = 0;
+      path = [];
+      visitedList = [];
+
+              
+    }
+    if(fstart != finish){
+      var myheap = new MinHeap(compareCells2)
+      iterations++;
+      fstart.g = 0;
+      fstart.h = fstart.mDistance(finish);
+      fstart.f = fstart.g + fstart.h;
+      fstart.search = iterations;
+      finish.g = Infinity;
+      finish.search = iterations;
+      myheap.insert(fstart);
+      expandedCells += computePath(finish, myheap);
+      
+      
+      
+      if(myheap.isEmpty()){
+        alert('I cannot reach the target')
+        endSearch();
+        return;
+      }
+      path = constructPath(finish);
+      
+          
+      while(path.length > 0 && !path[path.length-1].blocked){
+        pathLength++;
+        temp = fstart;
+        var ns = temp.neighbors;
+        for(let i = 0; i < ns.length; i++){
+          if(ns[i].blocked){
+            closedList.add(ns[i]);
+          }
+        }
+
+        fstart = path.pop();          
+        visitedList.push(temp);
+        
+        fstart.highLight('red')
+        fstart.g = temp.g+1;
+        fstart.f = fstart.g + fstart.h;
+        temp.parent = undefined;
+        fstart.parent = undefined;
+        
+        
+        
+
+      
+      }
+           
+      
+      
+      
+      
+    }
+    else{
+      endSearch()
+      
+    }
+    
+}
   
 
 }
@@ -491,7 +634,17 @@ function compareCells(cell1, cell2){
     return -1;
   }
 }
-
+function compareCells2(cell1, cell2){
+  if(cell1.f === cell2.f){
+    if(cell1.g < cell2.g){
+      return -1;
+    }
+    return 0;
+  }
+  if(cell1.f < cell2.f){
+    return -1;
+  }
+}
 
 
 /****************SETUP & DRAW FUNCTIONS **********************/
@@ -503,6 +656,7 @@ function setup() {
   canvas.elt.style.position = 'fixed';
   canvas.style('top', 100);
   canvas.style('left', (windowWidth - 1010) / 2);
+  
   init();
   dropdown = document.getElementById("MazeSelect");
   for (var i = 0; i < 50; i++) {
