@@ -517,10 +517,13 @@ function runSearch(){
             }
           }
           fstart = path.pop();          
-          temp.h = visitedList.length - temp.g;
           temp.f = temp.g+temp.h;
           visitedList.push(temp);
-          
+          temp.h = visitedList.length - temp.g;
+          for(let i = 0; i < visitedList.length; i++){
+            visitedList[i].h = temp.h;
+            
+          }
           fstart.highLight('red')
           fstart.g = temp.g+1;
           fstart.f = fstart.g + fstart.h;
