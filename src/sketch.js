@@ -221,7 +221,7 @@ function computePath(goal, heap){
         if(heap.has(neighbors[i])){
           heap.remove(neighbors[i]);
         }
-        if(neighbors[i].h === Infinity)
+        if(neighbors[i].h === Infinity || searchType === 'backward' || searchType === 'forward')
           neighbors[i].h = neighbors[i].mDistance(goal);
         
         
@@ -376,8 +376,7 @@ function runSearch(){
 
           
           fin.highLight('red')
-          fin.g = temp.g+1;
-          fin.f = fin.g + fin.h;
+          fin.parent = undefined
           temp.parent = undefined;
           
           
