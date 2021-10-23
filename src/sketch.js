@@ -226,7 +226,7 @@ function computePath(goal, heap){
         if(searchType === 'adaptive'){ 
           for(let j = 0; j < visitedList.length; j++){
             if(visitedList[j].compareTo(neighbors[i]) === true && !visitedList[j].blocked){
-              neighbors[i].h = visitedList.length - path.length; /*the path length is the expected g value for the goal
+              neighbors[i].h = visitedList.length - neighbors[i].g; /*the path length is the expected g value for the goal
                                                                   *the visitedList length is how long the path is from current state from start*/
               break;
             }
