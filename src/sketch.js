@@ -511,6 +511,10 @@ function runSearch(){
         }
         path = constructPath(finish);
         
+                //if it's adaptive, check the closed list to see if the current neighbor exists in it, then change the heuristic 
+          for(let j = 0; j < lastClosed.length; j++){
+              lastClosed[j].h = path.length - lastClosed[j].g; //the path length is the expected g value for the goal
+          } 
             
         while(path.length > 0 && !path[path.length-1].blocked){
           pathLength++;
