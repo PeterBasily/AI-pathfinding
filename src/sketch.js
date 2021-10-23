@@ -221,17 +221,12 @@ function computePath(goal, heap){
         if(heap.has(neighbors[i])){
           heap.remove(neighbors[i]);
         }
-        neighbors[i].h = neighbors[i].mDistance(goal);
-        //if it's adaptive, check the closed list to see if the current neighbor exists in it, then change the heuristic
-        if(searchType === 'adaptive'){ 
-          for(let j = 0; j < visitedList.length; j++){
-            if(visitedList[j].compareTo(neighbors[i]) === true && !visitedList[j].blocked){
-              neighbors[i].h = visitedList.length - neighbors[i].g; /*the path length is the expected g value for the goal
-                                                                  *the visitedList length is how long the path is from current state from start*/
-              break;
-            }
-          }             
-        }
+        if(neighbors[i].h === Infinity)
+          neighbors[i].h = neighbors[i].mDistance(goal);
+        
+        
+                       
+        
       //closedList() houses all the cells we discovered were blocked during our search
       if(!closedList.has(neighbors[i])){
         neighbors[i].f = neighbors[i].g + neighbors[i].h;
@@ -522,6 +517,8 @@ function runSearch(){
             }
           }
           fstart = path.pop();          
+          temp.h = visitedList.length - temp.g;
+          temp.f = temp.g+temp.h;
           visitedList.push(temp);
           
           fstart.highLight('red')
