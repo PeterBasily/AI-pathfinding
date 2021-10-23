@@ -285,7 +285,7 @@ function runSearch(){
         //if it's adaptive, check the closed list to see if the current neighbor exists in it, then change the heuristic
         if(searchType === 'adaptive'){ 
           for(let j = 0; j < lastClosed.length; j++){
-              lastClosed[i].h = path.length - neighbors[i].g; //the path length is the expected g value for the goal
+              lastClosed[j].h = path.length - lastClosed[j].g; //the path length is the expected g value for the goal
           }             
         }
         
