@@ -21,6 +21,7 @@ var pathLength = 0;
 var fstart; //used as temp pointer for start
 var fin;
 var expandedCells = 0;
+var lastClosed = [];
 /*Utility functions */ 
 
 /*
@@ -209,6 +210,7 @@ function computePath(goal, heap){
     expanded++;
     cur.highLight('rgba(' + v1.toString() + ','+v2.toString() + ',0, 0.25)')
     var neighbors = cur.neighbors;
+    lastClosed.push(cur);
     for(let i = 0; i < neighbors.length; i++){
       
       if(neighbors[i].search < iterations){
@@ -221,12 +223,7 @@ function computePath(goal, heap){
         if(heap.has(neighbors[i])){
           heap.remove(neighbors[i]);
         }
-        if(neighbors[i].h === Infinity)
-          neighbors[i].h = neighbors[i].mDistance(goal);
-        
-        
-                       
-        
+        neighbors[i].h = neighbors[i].mDistance(goal);
       //closedList() houses all the cells we discovered were blocked during our search
       if(!closedList.has(neighbors[i])){
         neighbors[i].f = neighbors[i].g + neighbors[i].h;
@@ -264,6 +261,7 @@ function runSearch(){
                 
       }
       if(fstart != finish){
+        lastClosed = [];
         var myheap = new MinHeap(compareCells)
         iterations++;
         fstart.g = 0;
@@ -283,6 +281,13 @@ function runSearch(){
           return;
         }
         path = constructPath(finish);
+
+        //if it's adaptive, check the closed list to see if the current neighbor exists in it, then change the heuristic
+        if(searchType === 'adaptive'){ 
+          for(let j = 0; j < lastClosed.length; j++){
+              lastClosed[i].h = path.length - neighbors[i].g; //the path length is the expected g value for the goal
+          }             
+        }
         
             
         while(path.length > 0 && !path[path.length-1].blocked){
@@ -517,8 +522,6 @@ function runSearch(){
             }
           }
           fstart = path.pop();          
-          temp.h = visitedList.length - temp.g;
-          temp.f = temp.g+temp.h;
           visitedList.push(temp);
           
           fstart.highLight('red')
